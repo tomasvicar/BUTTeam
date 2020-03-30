@@ -121,10 +121,10 @@ if __name__ == "__main__":
     validation_generator = data.DataLoader(validation_set, **params)
 
     # Model import
-    # model = Net()
+    model = Net()
     
-    model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
-    model=torch.load(model_name)
+    # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    # model=torch.load(model_name)
     
 
     model=model.to(device)
