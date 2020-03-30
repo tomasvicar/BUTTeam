@@ -30,7 +30,7 @@ def get_best_ts(res_np_log,lbls_np_log):
         v_best=-1
         for tt in np.concatenate( (np.linspace(0,0.1,100),np.linspace(0,1,100),np.linspace(0,0.1,100)),axis=0):
             
-            v= compute_beta_score_tom(l, f>tt, 2, 1)
+            Fbeta,Gbeta,v= compute_beta_score_tom(l, f>tt, 2, 1)
             if v>v_best:
                 v_best=v
                 t_best=tt
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     device = torch.device("cuda:0")
 
     # Parameters
-    params = {"batch_size": 64,
+    params = {"batch_size": 1,
               "shuffle": False,
               "num_workers": 0,
               "drop_last": False,
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     lbls_np_log=np.concatenate(lbls_np_log,axis=0)
     res_np_log=np.concatenate(res_np_log,axis=0)
         
-    Fbeta_measure05= compute_beta_score_tom(lbls_np_log, res_np_log>0.5, 2, 9)
+    Fbeta,Gbeta,geom_mean05= compute_beta_score_tom(lbls_np_log, res_np_log>0.5, 2, 9)
 
     
 
@@ -163,15 +163,16 @@ if __name__ == "__main__":
     
     
 
-    Fbeta_measure_best= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
+    Fbeta,Gbeta,geom_mean_best= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
     
     
-    _,_,Fbeta_measure_best2,_= compute_beta_score(lbls_np_log, res_np_log>t, 2, 9)
+    _,_,Fbeta_measure_best2,Gbet_measure_best2= compute_beta_score(lbls_np_log, res_np_log>t, 2, 9)
+    
+    geom_mean_best2=np.sqrt(Fbeta_measure_best2*Gbet_measure_best2)
 
-
-    print(Fbeta_measure_best)
-    print(Fbeta_measure_best2)
-    print(Fbeta_measure05)
+    print(geom_mean_best)
+    print(geom_mean_best2)
+    print(geom_mean05)
 
 
     print(t[0,:])

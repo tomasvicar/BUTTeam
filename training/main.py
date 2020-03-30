@@ -214,11 +214,13 @@ if __name__ == "__main__":
             t=get_best_ts(res_np_log,lbls_np_log)
         else:
             t=0.5
-        Fbeta_measure= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
+            
+            
+        Fbeta,Gbeta,geom_mean= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
         
         
         
-        trainig_beta_log.append(Fbeta_measure)
+        trainig_beta_log.append(geom_mean)
         trainig_loss_log.append(np.mean(tmp_loss_log))
 
             
@@ -296,10 +298,10 @@ if __name__ == "__main__":
             model.set_t(t[0,:])
         else:
             t=0.5
-        Fbeta_measure= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
+        Fbeta,Gbeta,geom_mean= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
     
         
-        valid_beta_log.append(Fbeta_measure)
+        valid_beta_log.append(geom_mean)
         valid_loss_log.append(np.mean(tmp_loss_log))
    
         
@@ -312,7 +314,7 @@ if __name__ == "__main__":
         
         plt.plot(trainig_beta_log,'b')
         plt.plot(valid_beta_log,'g')
-        plt.title('F2')
+        plt.title('geometric mean')
         plt.show()
         
         lr=get_lr(optimizer)

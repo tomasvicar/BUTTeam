@@ -31,12 +31,31 @@ def compute_beta_score_tom(labels, output, beta=2, num_classes=9):
     Fbetas[((1+beta**2)*TP+FP+beta**2*FN)==0]=1
     
     
+    
+    
+    
+    Fbeta=np.mean(Fbetas)
+    
+    
     Fbeta=np.mean(Fbetas)
     
     
     
     
-    return Fbeta
+    
+    Gbetas=TP/(TP+FP+beta*FN)
+    
+    
+    Gbetas[(TP+FP+beta*FN)==0]=1
+    
+    
+    
+    Gbeta=np.mean(Gbetas)
+    Gbeta=np.mean(Gbetas)
+    
+    geom_mean=np.sqrt(Gbeta*Fbeta)
+    
+    return Fbeta,Gbeta,geom_mean
     
     
     
