@@ -33,6 +33,13 @@ class myConv(nn.Module):
 
 
 class Net(nn.Module):
+    def set_t(self,t):
+        self.t=t
+        
+    def get_t(self):
+        return self.t
+    
+    
     def __init__(self, levels=7,lvl1_size=2,input_size=12,output_size=9,convs_in_layer=3):
         super().__init__()
         self.levels=levels
@@ -40,6 +47,8 @@ class Net(nn.Module):
         self.input_size=input_size
         self.output_size=output_size
         self.convs_in_layer=convs_in_layer
+        
+        self.t=0.5*np.ones(output_size)
         
         
         

@@ -12,6 +12,7 @@ from torch import optim
 from compute_beta_score import compute_beta_score
 from compute_beta_score_tom import compute_beta_score_tom
 from shutil import copyfile
+from find_best_t import get_best_ts
 
 
 PATHS = {"labels": "../Partitioning/data/partition/",
@@ -28,6 +29,42 @@ def get_lr(optimizer):
 def get_partition_data(file_name, file_path):
     with open(os.path.join(file_path, file_name)) as json_data:
         return json.load(json_data)
+    
+
+def fbeta_loss(output, labels,beta=2):
+
+    smooth = 0.1
+
+    TP=(labels)*(output)
+    FP=(1-labels)*(output)
+    FN=(labels)*(1-output)
+    
+    num_labels=torch.sum(labels,dim=1,keepdims =True)
+    
+    TP=TP/num_labels
+    FP=FP/num_labels
+    FN=FN/num_labels
+    
+
+    TP=torch.sum(TP,dim=0)/num_labels
+    FP=torch.sum(FP,dim=0)/num_labels
+    FN=torch.sum(FN,dim=0)/num_labels
+    
+
+
+    
+    Fbetas=((1+beta**2)*TP+smooth)/((1+beta**2)*TP+FP+beta**2*FN+smooth)
+    
+
+    
+    
+    Fbeta=torch.mean(Fbetas)
+    
+    
+    
+    
+    return -Fbeta
+
 
 
 if __name__ == "__main__":
@@ -40,7 +77,7 @@ if __name__ == "__main__":
     # Parameters
     params = {"batch_size": 64,
               "shuffle": True,
-              "num_workers": 2,
+              "num_workers": 4,
               'collate_fn':Dataset.collate_fn}
     
     max_epochs = 62
@@ -48,6 +85,9 @@ if __name__ == "__main__":
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
+    model_note='velke_filtry'
+    
+    best_t=0
     
     try:
         os.mkdir(save_dir)
@@ -82,7 +122,10 @@ if __name__ == "__main__":
     # Model import
     model = Net()
     
-    # model=model.cuda(0)
+    # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    # model=torch.load(model_name)
+    
+
     model=model.to(device)
 
 
@@ -110,6 +153,7 @@ if __name__ == "__main__":
         model.train()
         
         for pad_seqs,lens,lbls in training_generator:
+            
             pad_seqs_np,lens_np,lbls_np = pad_seqs.detach().cpu().numpy(),lens.detach().cpu().numpy(),lbls.detach().cpu().numpy()
             # Transfer to GPU
             # pad_seqs,lens,lbls = pad_seqs.to(device),lens.to(device),lbls.to(device)
@@ -127,6 +171,8 @@ if __name__ == "__main__":
             w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).cuda(0)
             
             
+            
+            # loss=fbeta_loss(res,lbls)
 
             
             res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
@@ -138,6 +184,9 @@ if __name__ == "__main__":
             p1_np=p1.detach().cpu().numpy()
             p2_np=p2.detach().cpu().numpy()
             loss=-torch.mean(p1+p2)
+            
+            
+            
             # loss=F.binary_cross_entropy(res,lbls)
             
             
@@ -160,7 +209,11 @@ if __name__ == "__main__":
         lbls_np_log=np.concatenate(lbls_np_log,axis=0)
         res_np_log=np.concatenate(res_np_log,axis=0)
             
-        Fbeta_measure= compute_beta_score_tom(lbls_np_log, res_np_log>0.5, 2, 9)
+        if best_t:
+            t=get_best_ts(res_np_log,lbls_np_log)
+        else:
+            t=0.5
+        Fbeta_measure= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
         
         
         
@@ -177,6 +230,7 @@ if __name__ == "__main__":
         model.eval()
             
         for pad_seqs,lens,lbls in validation_generator:
+
             
             pad_seqs_np,lens_np,lbls_np = pad_seqs.detach().cpu().numpy(),lens.detach().cpu().numpy(),lbls.detach().cpu().numpy()
             # Transfer to GPU
@@ -196,6 +250,8 @@ if __name__ == "__main__":
             
             
 
+            # loss=fbeta_loss(res,lbls)
+
             
             res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
@@ -206,7 +262,10 @@ if __name__ == "__main__":
             p1_np=p1.detach().cpu().numpy()
             p2_np=p2.detach().cpu().numpy()
             loss=-torch.mean(p1+p2)
-            # loss=F.binary_cross_entropy(res,lbls)
+            
+            
+            
+            loss=F.binary_cross_entropy(res,lbls)
             
             
 
@@ -230,10 +289,14 @@ if __name__ == "__main__":
             
         lbls_np_log=np.concatenate(lbls_np_log,axis=0)
         res_np_log=np.concatenate(res_np_log,axis=0)
-            
-        Fbeta_measure= compute_beta_score_tom(lbls_np_log, res_np_log>0.5, 2, 9)
-        
-        
+          
+        if best_t:
+            t=get_best_ts(res_np_log,lbls_np_log)
+            model.set_t(t[0,:])
+        else:
+            t=0.5
+        Fbeta_measure= compute_beta_score_tom(lbls_np_log, res_np_log>t, 2, 9)
+    
         
         valid_beta_log.append(Fbeta_measure)
         valid_loss_log.append(np.mean(tmp_loss_log))
@@ -255,7 +318,7 @@ if __name__ == "__main__":
         
         info=str(epoch) + '_' + str(lr) + '_train_'  + str(trainig_beta_log[-1]) + '_valid_' + str(valid_beta_log[-1]) 
         
-        model_name=save_dir+ os.sep + info  + '.pkl'
+        model_name=save_dir+ os.sep + model_note +info  + '.pkl'
         torch.save(model,model_name)
             
         model_names.append(model_name)
@@ -267,20 +330,21 @@ if __name__ == "__main__":
         scheduler.step()
             
           
-            
-best_models_dir='best_models' 
-    
-best_model_ind=np.argmax(valid_beta_log)
-best_model_name= model_names[best_model_ind]   
-best_model_name_new=best_model_name.replace(save_dir,best_models_dir)   
+                
+    best_models_dir='best_models' 
         
-try:
-    os.mkdir(best_models_dir)
-except:
-    pass            
-
-copyfile(best_model_name, best_model_name_new)
+    best_model_ind=np.argmax(valid_beta_log)
+    best_model_name= model_names[best_model_ind]   
+    best_model_name_new=best_model_name.replace(save_dir,best_models_dir)   
             
+            
+    try:
+        os.mkdir(best_models_dir)
+    except:
+        pass            
+    
+    copyfile(best_model_name, best_model_name_new)
+                
 
 
 
