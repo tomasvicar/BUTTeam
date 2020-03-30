@@ -12,7 +12,7 @@ except:
 
 
 PATHS = {"labels": "../Partitioning/data/partition/",
-         "data": "../../Training_WFDB/",
+         "data": "../../Training_WFDB",
          }
 
 

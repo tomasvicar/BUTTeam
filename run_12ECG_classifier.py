@@ -66,7 +66,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
 
 def load_12ECG_model():
     # load the model from disk 
-    model_name='best_models' + os.sep  + 'velkefiltry_1e-05_train_0.8749235_valid_0.72743636.pkl'
+    model_name='training' + os.sep  +  'best_models' + os.sep  + 'velkefiltry_1e-05_train_0.8749235_valid_0.72743636.pkl'
     
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     device = torch.device("cpu")
