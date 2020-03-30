@@ -39,6 +39,7 @@ def fbeta_loss(output, labels,beta=2):
     FP=(1-labels)*(output)
     FN=(labels)*(1-output)
     
+    
     num_labels=torch.sum(labels,dim=1,keepdims =True)
     
     TP=TP/num_labels
@@ -80,12 +81,12 @@ if __name__ == "__main__":
               "num_workers": 4,
               'collate_fn':Dataset.collate_fn}
     
-    max_epochs = 62
-    step_size=20
+    max_epochs = 92
+    step_size=30
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
-    model_note='velke_filtry'
+    model_note='velke-FILTRY_41_2lvl1'
     
     best_t=0
     
@@ -120,10 +121,10 @@ if __name__ == "__main__":
     validation_generator = data.DataLoader(validation_set, **params)
 
     # Model import
-    model = Net()
+    # model = Net()
     
-    # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
-    # model=torch.load(model_name)
+    model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    model=torch.load(model_name)
     
 
     model=model.to(device)

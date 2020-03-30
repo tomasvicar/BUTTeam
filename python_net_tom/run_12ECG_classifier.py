@@ -12,8 +12,8 @@ def run_12ECG_classifier(data,header_data,classes,model):
     current_score = np.zeros(num_classes)
 
     # t=model.get_t()
-    # t=np.array([0.47847848, 0.42042042, 0.45745746, 0.38838839, 0.15715716, 0.2982983 , 0.49449449, 0.42042042, 0.57757758])
-    t=0.5
+    t=np.array([0.47474747, 0.55555556, 0.44444444, 0.55555556, 0.14141414,0.55555556, 0.32323232, 0.56565657, 0.63636364])
+    # t=0.5
     
     MEANS=np.array([ 0.00313717,  0.00086543, -0.00454349, -0.00416486,  0.00102769,-0.00275855, -0.00108178,  0.00016227,  0.00010818, -0.00270446,0.00010818, -0.00156859])
     
@@ -45,6 +45,9 @@ def run_12ECG_classifier(data,header_data,classes,model):
     
     score=score.detach().cpu().numpy()[0,:]
     label = score>t
+    
+    
+    
     
     label=label[np.array(order)]
     score=score[np.array(order)]

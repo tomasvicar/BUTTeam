@@ -6,7 +6,7 @@ from torch.nn import init
 
 
 class myConv(nn.Module):
-    def __init__(self, in_size, out_size,filter_size=3,stride=1,pad=1,do_batch=1,dov=0):
+    def __init__(self, in_size, out_size,filter_size=41,stride=1,pad=20,do_batch=1,dov=0):
         super().__init__()
         self.do_batch=do_batch
         self.dov=dov

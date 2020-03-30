@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # Parameters
     params = {"batch_size": 64,
-              "shuffle": True,
+              "shuffle": False,
               "num_workers": 0,
               "drop_last": False,
               'collate_fn':Dataset.collate_fn}
