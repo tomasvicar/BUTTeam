@@ -10,7 +10,8 @@ def compute_beta_score_tom(labels, output, beta=2, num_classes=9):
     FN=(labels==1)&(output==0)
     
     num_labels=np.sum(labels,axis=1,keepdims =1)
-    
+    if num_classes==1:
+        num_labels=1
     
     TP=TP/num_labels
     FP=FP/num_labels
@@ -27,7 +28,7 @@ def compute_beta_score_tom(labels, output, beta=2, num_classes=9):
     Fbetas=(1+beta**2)*TP/((1+beta**2)*TP+FP+beta**2*FN)
     
     
-    Fbetas[np.isnan(Fbetas)]=1
+    Fbetas[((1+beta**2)*TP+FP+beta**2*FN)==0]=1
     
     
     Fbeta=np.mean(Fbetas)
@@ -39,10 +40,3 @@ def compute_beta_score_tom(labels, output, beta=2, num_classes=9):
     
     
     
-    
-    
-    
-    
-
-
-

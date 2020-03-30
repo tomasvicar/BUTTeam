@@ -1,0 +1,5 @@
+matlab_net_training_tom/*.mat
+matlab_net_training_tom/*.asv
+matlab_net_training_tom/*/*.mat
+*/__pycache__/*
+__pycache__/*

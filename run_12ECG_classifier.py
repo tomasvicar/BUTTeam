@@ -10,10 +10,10 @@ def run_12ECG_classifier(data,header_data,classes,model):
     num_classes = len(classes)
     current_label = np.zeros(num_classes, dtype=int)
     current_score = np.zeros(num_classes)
-    
-    
-    
-    
+
+    # t=model.get_t()
+    t=np.array([0.47474747, 0.55555556, 0.44444444, 0.55555556, 0.14141414,0.55555556, 0.32323232, 0.56565657, 0.63636364])
+    # t=0.5
     
     MEANS=np.array([ 0.00313717,  0.00086543, -0.00454349, -0.00416486,  0.00102769,-0.00275855, -0.00108178,  0.00016227,  0.00010818, -0.00270446,0.00010818, -0.00156859])
     
@@ -27,8 +27,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
             if pato==cl:
                 order.append(k)
     
-    
-    
+
     data=(data-MEANS.reshape(-1,1))/STDS.reshape(-1,1)
     
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -37,16 +36,21 @@ def run_12ECG_classifier(data,header_data,classes,model):
     lens=data.shape[1]
     lens=torch.from_numpy(np.array(lens).astype(np.float32)).view(1).to(device)
     
+    # data=np.concatenate((data,np.zeros((data.shape[0],3000))),axis=1)
+    
     data=torch.from_numpy(np.reshape(data.astype(np.float32), (1,data.shape[0],data.shape[1]))).to(device)
  
-    
  
     score = model(data,lens) 
     
     score=score.detach().cpu().numpy()[0,:]
-    score=score[np.array(order)]
+    label = score>t
     
-    label = (score>0.5)
+    
+    
+    
+    label=label[np.array(order)]
+    score=score[np.array(order)]
     
     
     current_label[label] = 1
