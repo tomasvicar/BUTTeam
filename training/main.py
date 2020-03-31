@@ -76,7 +76,7 @@ if __name__ == "__main__":
     # Parameters
     params = {"batch_size": 64,
               "shuffle": True,
-              "num_workers": 4,
+              "num_workers":4,
               'collate_fn':Dataset.collate_fn}
     
     max_epochs = 92
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
-    model_note='retrain_beta'
+    model_note='aug'
     
     best_t=0
     
@@ -112,17 +112,17 @@ if __name__ == "__main__":
     partition = get_partition_data("partition_82.json", PATHS["labels"])
 
     # Generators
-    training_set = Dataset(partition["train"], PATHS["data"])
+    training_set = Dataset(partition["train"], PATHS["data"],'train')
     training_generator = data.DataLoader(training_set, **params)
 
-    validation_set = Dataset(partition["validation"], PATHS["data"])
+    validation_set = Dataset(partition["validation"], PATHS["data"],'valid')
     validation_generator = data.DataLoader(validation_set, **params)
 
     # Model import
-    # model = Net()
+    model = Net()
     
-    model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
-    model=torch.load(model_name)
+    # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    # model=torch.load(model_name)
     
 
     model=model.to(device)

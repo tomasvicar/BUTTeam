@@ -40,7 +40,7 @@ class Net(nn.Module):
         return self.t
     
     
-    def __init__(self, levels=7,lvl1_size=3,input_size=12,output_size=9,convs_in_layer=3):
+    def __init__(self, levels=7,lvl1_size=2,input_size=12,output_size=9,convs_in_layer=3):
         super().__init__()
         self.levels=levels
         self.lvl1_size=lvl1_size

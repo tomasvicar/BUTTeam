@@ -3,7 +3,7 @@ from read_file import read_data
 from read_file import read_lbl_tom
 import numpy as np
 import torch 
-
+from skimage.transform import resize
 
 
 class Dataset(data.Dataset):
@@ -12,10 +12,11 @@ class Dataset(data.Dataset):
     Ref: https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
     """
 
-    def __init__(self, list_of_ids, data_path):
+    def __init__(self, list_of_ids, data_path,split):
         """Initialization"""
         self.path = data_path
         self.list_of_ids = list_of_ids
+        self.split=split
         
         self.MEANS=np.array([ 0.00313717,  0.00086543, -0.00454349, -0.00416486,  0.00102769,-0.00275855, -0.00108178,  0.00016227,  0.00010818, -0.00270446,0.00010818, -0.00156859])
     
@@ -35,7 +36,30 @@ class Dataset(data.Dataset):
         # Read data and get label
         X = read_data(self.path, file_name)
         
+        
+        
+        sig_len=X.shape[1]
+        signal_num=X.shape[0]
+        
+        if self.split=='train':
+            if torch.rand(1).numpy()[0]>0.3:
+                
+                
+                shift=torch.randint(sig_len,(1,1)).view(-1).numpy()
+                
+                X=np.roll(X, shift, axis=1)
+                
+            if torch.rand(1).numpy()[0]>0.3:
+                
+                max_resize_change=0.05
+                relative_change=1+torch.rand(1).numpy()[0]*2*max_resize_change-max_resize_change
+                new_len=int(relative_change*sig_len)
+                
+                
+                X=resize(X,(signal_num,new_len),anti_aliasing=False)
+        
         X=(X-self.MEANS.reshape(-1,1))/self.STDS.reshape(-1,1)
+        
         
         lbl = read_lbl_tom(self.path, file_name)
         
