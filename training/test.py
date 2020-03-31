@@ -1,5 +1,6 @@
 import driver_tom
 import evaluate_12ECG_score
+import numpy as np
 
 data_path='../../test_data'
 
@@ -17,5 +18,5 @@ output_string = 'AUROC|AUPRC|Accuracy|F-measure|Fbeta-measure|Gbeta-measure\n{:.
 
 print(output_string)
     
-    
+print(np.sqrt(f_beta*g_beta))    
     

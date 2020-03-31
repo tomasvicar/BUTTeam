@@ -50,7 +50,7 @@ def get_best_ts(res_np_log,lbls_np_log):
 if __name__ == "__main__":
     
     PATHS = {"labels": "../Partitioning/data/partition/",
-         "data": "../../Training_WFDB/",
+         "data": "../../Training_WFDB",
          }
 
     
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
     # Model import
     # model = Net()
-    model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    model_name='best_models' + os.sep  + 'velkefiltry_1e-05_train_0.8749235_valid_0.72743636.pkl'
     model=torch.load(model_name)
     
     # model=model.cuda(0)

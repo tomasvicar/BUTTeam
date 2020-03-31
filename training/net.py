@@ -6,7 +6,7 @@ from torch.nn import init
 
 
 class myConv(nn.Module):
-    def __init__(self, in_size, out_size,filter_size=3,stride=1,pad=1,do_batch=1,dov=0):
+    def __init__(self, in_size, out_size,filter_size=13,stride=1,pad=6,do_batch=1,dov=0):
         super().__init__()
         self.do_batch=do_batch
         self.dov=dov
@@ -40,7 +40,7 @@ class Net(nn.Module):
         return self.t
     
     
-    def __init__(self, levels=7,lvl1_size=2,input_size=12,output_size=9,convs_in_layer=3):
+    def __init__(self, levels=7,lvl1_size=3,input_size=12,output_size=9,convs_in_layer=3):
         super().__init__()
         self.levels=levels
         self.lvl1_size=lvl1_size
