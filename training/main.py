@@ -7,7 +7,7 @@ from dataset_class import Dataset
 from torch.utils import data
 import numpy as np
 import matplotlib.pyplot as plt
-from net import Net
+import net
 from torch import optim
 from compute_beta_score import compute_beta_score
 from compute_beta_score_tom import compute_beta_score_tom
@@ -79,14 +79,14 @@ if __name__ == "__main__":
               "num_workers":4,
               'collate_fn':Dataset.collate_fn}
     
-    max_epochs = 92
-    step_size=30
+    max_epochs = 122
+    step_size=40
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
-    model_note='aug'
+    model_note='aug_adition_net_best_t'
     
-    best_t=0
+    best_t=1
     
     try:
         os.mkdir(save_dir)
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     validation_generator = data.DataLoader(validation_set, **params)
 
     # Model import
-    model = Net()
+    model = net.Net_addition_grow()
     
     # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
     # model=torch.load(model_name)
