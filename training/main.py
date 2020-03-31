@@ -31,7 +31,7 @@ def get_partition_data(file_name, file_path):
         return json.load(json_data)
     
 
-def fbeta_loss(output, labels,beta=2):
+def beta_loss(output, labels,beta=2):
 
     smooth = 0.1
 
@@ -56,15 +56,13 @@ def fbeta_loss(output, labels,beta=2):
     
     Fbetas=((1+beta**2)*TP+smooth)/((1+beta**2)*TP+FP+beta**2*FN+smooth)
     
-
-    
-    
+    Gbetas=(TP+smooth)/(TP+FP+beta*FN+smooth)
+                        
     Fbeta=torch.mean(Fbetas)
+    Gbeta=torch.mean(Gbetas)
     
     
-    
-    
-    return -Fbeta
+    return -torch.sqrt(Fbeta*Gbeta)
 
 
 
@@ -86,7 +84,7 @@ if __name__ == "__main__":
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
-    model_note='velke-FILTRY_41_2lvl1'
+    model_note='retrain_beta'
     
     best_t=0
     
@@ -121,10 +119,10 @@ if __name__ == "__main__":
     validation_generator = data.DataLoader(validation_set, **params)
 
     # Model import
-    model = Net()
+    # model = Net()
     
-    # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
-    # model=torch.load(model_name)
+    model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    model=torch.load(model_name)
     
 
     model=model.to(device)
@@ -173,18 +171,18 @@ if __name__ == "__main__":
             
             
             
-            # loss=fbeta_loss(res,lbls)
+            loss=beta_loss(res,lbls)
 
             
-            res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
+            # res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
-            res_c_np=res_c.detach().cpu().numpy()
+            # res_c_np=res_c.detach().cpu().numpy()
             
-            p1=lbls*torch.log(res_c)*w_positive_tensor
-            p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
-            p1_np=p1.detach().cpu().numpy()
-            p2_np=p2.detach().cpu().numpy()
-            loss=-torch.mean(p1+p2)
+            # p1=lbls*torch.log(res_c)*w_positive_tensor
+            # p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
+            # p1_np=p1.detach().cpu().numpy()
+            # p2_np=p2.detach().cpu().numpy()
+            # loss=-torch.mean(p1+p2)
             
             
             
@@ -253,22 +251,22 @@ if __name__ == "__main__":
             
             
 
-            # loss=fbeta_loss(res,lbls)
+            loss=beta_loss(res,lbls)
 
             
-            res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
+            # res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
-            res_c_np=res_c.detach().cpu().numpy()
+            # res_c_np=res_c.detach().cpu().numpy()
             
-            p1=lbls*torch.log(res_c)*w_positive_tensor
-            p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
-            p1_np=p1.detach().cpu().numpy()
-            p2_np=p2.detach().cpu().numpy()
-            loss=-torch.mean(p1+p2)
+            # p1=lbls*torch.log(res_c)*w_positive_tensor
+            # p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
+            # p1_np=p1.detach().cpu().numpy()
+            # p2_np=p2.detach().cpu().numpy()
+            # loss=-torch.mean(p1+p2)
             
             
             
-            loss=F.binary_cross_entropy(res,lbls)
+            # loss=F.binary_cross_entropy(res,lbls)
             
             
 
