@@ -64,7 +64,8 @@ class Net(nn.Module):
             for conv_num_in_lvl in range(self.convs_in_layer-1):
                 self.layers.append(myConv(int(lvl1_size*2**lvl_num), int(lvl1_size*2**lvl_num)))
 
-            self.fc=nn.Linear(int(lvl1_size*2**(self.levels-1)), self.output_size)
+
+        self.fc=nn.Linear(int(lvl1_size*2**(self.levels-1)), self.output_size)
         
         
         
@@ -122,8 +123,107 @@ class Net(nn.Module):
         
         
         
+      
         
+class Net_addition_grow(nn.Module):
+    def set_t(self,t):
+        self.t=t
+        
+    def get_t(self):
+        return self.t
+    
+    
+    def __init__(self, levels=7,lvl1_size=16,input_size=12,output_size=9,convs_in_layer=3):
+        super().__init__()
+        self.levels=levels
+        self.lvl1_size=lvl1_size
+        self.input_size=input_size
+        self.output_size=output_size
+        self.convs_in_layer=convs_in_layer
+        
+        self.t=0.5*np.ones(output_size)
+        
+        
+        
+        
+        self.layers=nn.ModuleList()
+        for lvl_num in range(self.levels):
+            
+            
+            if lvl_num==0:
+                self.layers.append(myConv(input_size, int(lvl1_size*(lvl_num+1))))
+            else:
+                self.layers.append(myConv(int(lvl1_size*(lvl_num), int(lvl1_size*(lvl_num+1)))))
+            
+            for conv_num_in_lvl in range(self.convs_in_layer-1):
+                self.layers.append(myConv(int(lvl1_size*(lvl_num+1)), int(lvl1_size*(lvl_num+1))))
 
+
+
+        self.fc=nn.Linear(int(lvl1_size*self.levels), self.output_size)
+        
+        
+        
+        
+        
+        for i, m in enumerate(self.modules()):
+            if isinstance(m, nn.Conv2d):
+                init.xavier_normal_(m.weight)
+                init.constant_(m.bias, 0)
+        
+        
+        
+    def forward(self, x,lens):
+        
+        #tady dodělat vymazání na násobek bloku
+        
+        for signal_num in range(list(x.size())[0]):
+            
+            k=int(np.floor(lens[signal_num].cpu().numpy()/(2**(self.levels-1)))*(2**(self.levels-1)))
+            
+            x[signal_num,:,k:]=0
+        
+        
+        
+        layer_num=-1
+        for lvl_num in range(self.levels):
+            
+            
+            for conv_num_in_lvl in range(self.convs_in_layer):
+                layer_num+=1
+                if conv_num_in_lvl==1:
+                    y=x
+                
+                x=self.layers[layer_num](x)
+                
+            x=x+y
+            x=F.max_pool1d(x, 2, 2)
+            
+            
+            
+        
+        for signal_num in range(list(x.size())[0]):
+            
+            k=int(np.floor(lens[signal_num].cpu().numpy()/(2**(self.levels-1))))
+            
+            x[signal_num,:,k:]=-np.Inf
+            
+        
+        
+        x=F.adaptive_max_pool1d(x,1)
+        
+        
+        # N,C,1
+        
+        x=x.view(list(x.size())[:2])
+        
+        # N,C
+        
+        x=self.fc(x)
+        
+        x=torch.sigmoid(x)
+        
+        return x
                 
         
 

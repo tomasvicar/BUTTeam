@@ -171,18 +171,18 @@ if __name__ == "__main__":
             
             
             
-            loss=beta_loss(res,lbls)
+            # loss=beta_loss(res,lbls)
 
             
-            # res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
+            res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
-            # res_c_np=res_c.detach().cpu().numpy()
+            res_c_np=res_c.detach().cpu().numpy()
             
-            # p1=lbls*torch.log(res_c)*w_positive_tensor
-            # p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
-            # p1_np=p1.detach().cpu().numpy()
-            # p2_np=p2.detach().cpu().numpy()
-            # loss=-torch.mean(p1+p2)
+            p1=lbls*torch.log(res_c)*w_positive_tensor
+            p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
+            p1_np=p1.detach().cpu().numpy()
+            p2_np=p2.detach().cpu().numpy()
+            loss=-torch.mean(p1+p2)
             
             
             
@@ -251,18 +251,18 @@ if __name__ == "__main__":
             
             
 
-            loss=beta_loss(res,lbls)
+            # loss=beta_loss(res,lbls)
 
             
-            # res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
+            res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
-            # res_c_np=res_c.detach().cpu().numpy()
+            res_c_np=res_c.detach().cpu().numpy()
             
-            # p1=lbls*torch.log(res_c)*w_positive_tensor
-            # p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
-            # p1_np=p1.detach().cpu().numpy()
-            # p2_np=p2.detach().cpu().numpy()
-            # loss=-torch.mean(p1+p2)
+            p1=lbls*torch.log(res_c)*w_positive_tensor
+            p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
+            p1_np=p1.detach().cpu().numpy()
+            p2_np=p2.detach().cpu().numpy()
+            loss=-torch.mean(p1+p2)
             
             
             

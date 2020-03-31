@@ -3,7 +3,6 @@ from read_file import read_data
 from read_file import read_lbl_tom
 import numpy as np
 import torch 
-from skimage.transform import resize
 
 
 class Dataset(data.Dataset):
@@ -42,12 +41,13 @@ class Dataset(data.Dataset):
         signal_num=X.shape[0]
         
         if self.split=='train':
-            if torch.rand(1).numpy()[0]>0.3:
+            # if torch.rand(1).numpy()[0]>0.3:
                 
                 
-                shift=torch.randint(sig_len,(1,1)).view(-1).numpy()
+            #     shift=torch.randint(sig_len,(1,1)).view(-1).numpy()
                 
-                X=np.roll(X, shift, axis=1)
+            #     X=np.roll(X, shift, axis=1)
+                
                 
             if torch.rand(1).numpy()[0]>0.3:
                 
@@ -55,8 +55,33 @@ class Dataset(data.Dataset):
                 relative_change=1+torch.rand(1).numpy()[0]*2*max_resize_change-max_resize_change
                 new_len=int(relative_change*sig_len)
                 
+                Y=np.zeros((signal_num,new_len))
+                for k in range(signal_num):
+
+                    Y[k,:]=np.interp(np.linspace(0, sig_len-1, new_len),np.linspace(0, sig_len-1, sig_len),X[k,:])
+                X=Y
                 
-                X=resize(X,(signal_num,new_len),anti_aliasing=False)
+            # if torch.rand(1).numpy()[0]>0.1:
+                
+            #     max_mult_change=0.1
+                
+            #     for k in range(signal_num):
+            #         mult_change=1+torch.rand(1).numpy()[0]*2*max_mult_change-max_mult_change
+            #         X[k,:]=X[k,:]*mult_change
+                    
+            
+            # if torch.rand(1).numpy()[0]>0.1:
+                
+            #     max_gama_change=0.1
+                
+            #     for k in range(signal_num):
+            #         mult_change=1+torch.rand(1).numpy()[0]*2*max_gama_change-max_gama_change
+            #         X[k,:]=X[k,:]**mult_change     
+                
+                
+                
+                
+                
         
         X=(X-self.MEANS.reshape(-1,1))/self.STDS.reshape(-1,1)
         
