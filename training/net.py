@@ -153,13 +153,14 @@ class Net_addition_grow(nn.Module):
             if lvl_num==0:
                 self.layers.append(myConv(input_size, int(lvl1_size*(lvl_num+1))))
             else:
-                self.layers.append(myConv(int(lvl1_size*(lvl_num), int(lvl1_size*(lvl_num+1)))))
+                self.layers.append(myConv(int(lvl1_size*(lvl_num)+int(lvl1_size*(lvl_num-1))+input_size, int(lvl1_size*(lvl_num+1)))))
             
             for conv_num_in_lvl in range(self.convs_in_layer-1):
                 self.layers.append(myConv(int(lvl1_size*(lvl_num+1)), int(lvl1_size*(lvl_num+1))))
 
 
-
+        self.conv_final=myConv(int(lvl1_size*(self.levels)+int(lvl1_size*(self.levels-1))+input_size, int(lvl1_size*self.levels)))
+        
         self.fc=nn.Linear(int(lvl1_size*self.levels), self.output_size)
         
         
@@ -183,7 +184,7 @@ class Net_addition_grow(nn.Module):
             
             x[signal_num,:,k:]=0
         
-        
+        x0=x
         
         layer_num=-1
         for lvl_num in range(self.levels):
@@ -196,7 +197,8 @@ class Net_addition_grow(nn.Module):
                 
                 x=self.layers[layer_num](x)
                 
-            x=x+y
+            x=torch.cat((F.avg_pool1d(x0,2**lvl_num,2**lvl_num),x,y),1)
+            
             x=F.max_pool1d(x, 2, 2)
             
             
