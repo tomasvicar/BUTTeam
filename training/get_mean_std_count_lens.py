@@ -19,8 +19,11 @@ def get_partition_data(file_name, file_path):
 partition = get_partition_data("partition_82.json", PATHS["labels"])
 #labels = get_partition_data("labels.json", PATHS["labels"])
 
-names=partition["train"]
+# names=partition["train"]
 
+# names=partition["train"]+partition["validation"]
+
+names=partition["validation"]
 
 #labels_train =[labels[x] for x in partition["train"]]
 
@@ -98,4 +101,5 @@ print(len(lens))
 # 5430
 
 
+np.save('lens.npy', np.array(lens))
 

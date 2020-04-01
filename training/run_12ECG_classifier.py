@@ -7,12 +7,18 @@ import os
 
 def run_12ECG_classifier(data,header_data,classes,model):
     
+    lens=model[1]
+    model=model[0]
+    batch=32
+    
+    model.eval()
+    
     num_classes = len(classes)
     current_label = np.zeros(num_classes, dtype=int)
     current_score = np.zeros(num_classes)
 
-    # t=model.get_t()
-    t=np.array([0.5959596 , 0.02626263, 0.82828283, 0.51515152, 0.46464646,0.74747475, 0.62626263, 0.22222222, 0.71717172])
+    t=model.get_t()
+    # t=np.array([0.5959596 , 0.02626263, 0.82828283, 0.51515152, 0.46464646,0.74747475, 0.62626263, 0.22222222, 0.71717172])
     # t=0.5
     
     MEANS=np.array([ 0.00313717,  0.00086543, -0.00454349, -0.00416486,  0.00102769,-0.00275855, -0.00108178,  0.00016227,  0.00010818, -0.00270446,0.00010818, -0.00156859])
@@ -29,6 +35,15 @@ def run_12ECG_classifier(data,header_data,classes,model):
     
 
     data=(data-MEANS.reshape(-1,1))/STDS.reshape(-1,1)
+    
+    
+    lens_sample=np.random.choice(lens, batch, replace=False)
+    max_len=np.max(lens_sample)
+    
+    data_new=np.zeros((data.shape[0],max(max_len,data.shape[1])))
+    data_new[:,:data.shape[1]]=data
+    
+    data=data_new
     
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     device = torch.device("cpu")
@@ -66,7 +81,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
 
 def load_12ECG_model():
     # load the model from disk 
-    model_name='best_models' + os.sep  + 'velkefiltry_1e-05_train_0.8749235_valid_0.72743636.pkl'
+    model_name='best_models' + os.sep  + 'aug_adition_net_best_t_smalerbatch_larger_model75_0.001_train_0.8898842_valid_0.74637944.pkl'
     
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     device = torch.device("cpu")
@@ -75,5 +90,8 @@ def load_12ECG_model():
     
     loaded_model=loaded_model.eval().to(device)
 
+    lens=np.load('lens.npy')
+    
+    loaded_model=[loaded_model,lens]
 
     return loaded_model
