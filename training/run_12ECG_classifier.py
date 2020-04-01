@@ -36,8 +36,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
     lens=data.shape[1]
     lens=torch.from_numpy(np.array(lens).astype(np.float32)).view(1).to(device)
     
-    # data=np.concatenate((data,np.zeros((data.shape[0],3000))),axis=1)
-    
+
     data=torch.from_numpy(np.reshape(data.astype(np.float32), (1,data.shape[0],data.shape[1]))).to(device)
  
  

@@ -84,7 +84,7 @@ if __name__ == "__main__":
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
-    model_note='aug_adition_net_best_t_smalerbatch_larger_model'
+    model_note='aug_adition_net_best_t_smalerbatch_larger_model_vicaug'
     
     best_t=1
     
