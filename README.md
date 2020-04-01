@@ -23,7 +23,6 @@ Podrobnější informace (včetně např. četnosti jednotlivých kategorií) lz
 
 * důležité informace připisujte sem do readme (nejsnadněji upravujte přímo přes github na master branchu)
 
-* kdo na něčem pracuje/má hotové, tak si to přidejte dole do "Kdo na čem pracoval/pracuje" ať máme trochu přehled
 
 ## Patologie:
 
@@ -40,14 +39,12 @@ Podrobnější informace (včetně např. četnosti jednotlivých kategorií) lz
 ![](notes/radovanovaUzasnaTabuleSPatologiema.jpeg)
 
 
-## Kdo na čem pracoval/pracuje
-
-Tomáš Vičar
-- [x] vytvoření githubu
-- [ ] otestování standardní rekurentní sítě v Matlabu pro klasifikaci ze surových dat (použiju loňskou síť)
-            - v matlabu to nejde - je to tam debilní, zkusim v pythonu
-- [x] rozjed kubův dataloader v pythonu
-- [ ] otestovat jednoduchou konvoluční síť
+## co zkusit:
+- [ ] crossvalidační enamble
+- [ ] předučení na naších datech
+- [ ] replikace signálů místo doplňování nulama
+- [ ] augmentace prodlužováním a zkracováním (nalepit na konec kus z prostředka)
+- [ ]
 
 
 
