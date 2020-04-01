@@ -51,7 +51,7 @@ class Dataset(data.Dataset):
                 
             if torch.rand(1).numpy()[0]>0.3:
                 
-                max_resize_change=0.1
+                max_resize_change=0.2
                 relative_change=1+torch.rand(1).numpy()[0]*2*max_resize_change-max_resize_change
                 new_len=int(relative_change*sig_len)
                 
