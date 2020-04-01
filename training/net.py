@@ -93,7 +93,7 @@ class Attention(nn.Module):
         # Apply linear_out on every 2nd dimension of concat
         # output -> (batch_size, output_len, dimensions)
         output = self.linear_out(combined).view(batch_size, output_len, dimensions)
-        output = self.tanh(output)
+        # output = self.tanh(output)
 
         return output, attention_weights
 
@@ -233,7 +233,7 @@ class Net_addition_grow_attention(nn.Module):
         return self.t
     
     
-    def __init__(self, levels=7,lvl1_size=2,input_size=12,output_size=9,convs_in_layer=3,init_conv=4,filter_size=13,attention_size=256):
+    def __init__(self, levels=8,lvl1_size=2,input_size=12,output_size=9,convs_in_layer=3,init_conv=4,filter_size=13,attention_size=128):
         super().__init__()
         self.levels=levels
         self.lvl1_size=lvl1_size
@@ -267,11 +267,14 @@ class Net_addition_grow_attention(nn.Module):
         self.conv_final=myConv(int(lvl1_size*(self.levels))+int(lvl1_size*(self.levels))+init_conv, self.attention_size,filter_size=filter_size)
         
         
-        self.fc_at_query=nn.Linear(self.attention_size, self.attention_size)
+
+        encoder_layer = nn.TransformerEncoderLayer(d_model=attention_size, nhead=2,dim_feedforward=512)
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
         
+        decoder_layer = nn.TransformerDecoderLayer(d_model=attention_size, nhead=2,dim_feedforward=512)
+        self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=2)
         
-        
-        self.attention=Attention(self.attention_size)
+
         
         
         self.fc=nn.Linear(self.attention_size, self.output_size)
@@ -356,45 +359,55 @@ class Net_addition_grow_attention(nn.Module):
         
         
         shape=list(x.size())
-        xx=torch.zeros((shape[0],shape[1]),dtype=x.dtype)
+        mask=torch.zeros((shape[0],shape[2]),dtype=torch.bool)
         
         cuda_check = x.is_cuda
         if cuda_check:
             cuda_device = x.get_device()
             device = torch.device('cuda:' + str(cuda_device) )
-            xx=xx.to(device)
+            mask=mask.to(device)
             
             
         for signal_num in range(list(x.size())[0]):
             
             k=int(np.floor(lens[signal_num].cpu().numpy()/(2**(self.levels-1))))
-            
-            
-            query=x[[signal_num],:,:k]
-            query=F.adaptive_avg_pool1d(query,1)
-            shape=list(query.size())
-            query=query.view(list(query.size())[:2])
-            query=self.fc_at_query(query).view(shape)
-            
-            
-            
-            tmp=x[[signal_num],:,:k]
-            
-            query=query.permute(0,2,1)
-            tmp=tmp.permute(0,2,1)
-            
-            tmp,w=self.attention(query,tmp)
-            
-            xx[signal_num,:]=tmp
+            mask[[signal_num],k:]=1
         
         
         
-        x=self.fc(xx)
+        x=x.permute(2,0,1)
+        # mask=mask.permute(0,1)
+        memory=self.transformer_encoder(x,src_key_padding_mask=mask)
+        xx=self.transformer_decoder(x,memory,tgt_key_padding_mask=mask,memory_key_padding_mask=mask)
+        
+        x=xx.permute(1,2,0)
+        
+        
+        for signal_num in range(list(x.size())[0]):
+            
+            k=int(np.floor(lens[signal_num].cpu().numpy()/(2**(self.levels-1))))
+            
+            x[signal_num,:,k:]=-np.Inf
+            
+        
+        
+        x=F.adaptive_max_pool1d(x,1)
+        
+        
+        # N,C,1
+        
+        x=x.view(list(x.size())[:2])
+        
+        
+        
+        x=self.fc(x)
         
         x=torch.sigmoid(x)
         
         return x
                 
+    
+    
     
     
     
