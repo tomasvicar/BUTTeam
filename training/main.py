@@ -115,7 +115,7 @@ if __name__ == "__main__":
     validation_generator = data.DataLoader(validation_set, **params)
 
     # Model import
-    model = net.Net_addition_grow_attention()
+    model = net.Net_addition_grow()
     
     # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
     # model=torch.load(model_name)
