@@ -30,8 +30,18 @@ def get_partition_data(file_name, file_path):
     with open(os.path.join(file_path, file_name)) as json_data:
         return json.load(json_data)
     
+    
+def wce(res,lbls,w_positive_tensor,w_negative_tensor):
+    
+    res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
+            
+    p1=lbls*torch.log(res_c)*w_positive_tensor
+    p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
+    
+    return -torch.mean(p1+p2)
+    
 
-def beta_loss(output, labels,beta=2):
+def beta_loss(output, labels,w_positive_tensor,w_negative_tensor,beta=2):
 
     smooth = 0.1
 
@@ -87,6 +97,9 @@ if __name__ == "__main__":
     model_note='aug_attentintest_best_t'
     
     best_t=1
+    # loss_fcn=beta_loss
+    loss_fcn=wce
+    
     
     try:
         os.mkdir(save_dir)
@@ -117,7 +130,7 @@ if __name__ == "__main__":
     # Model import
     model = net.Net_addition_grow()
     
-    # model_name='best_models' + os.sep  + '61_1e-05_train_0.9286569_valid_0.8222659.pkl'
+    # model_name='best_models' + os.sep  + 'aug_adition_net_best_t_smalerbatch_larger_model_vicaug55_0.001_train_0.82792526_valid_0.75376415.pkl'
     # model=torch.load(model_name)
     
 
@@ -166,24 +179,10 @@ if __name__ == "__main__":
             w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).cuda(0)
             
             
-            
-            # loss=beta_loss(res,lbls)
 
             
-            res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
-            
-            res_c_np=res_c.detach().cpu().numpy()
-            
-            p1=lbls*torch.log(res_c)*w_positive_tensor
-            p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
-            p1_np=p1.detach().cpu().numpy()
-            p2_np=p2.detach().cpu().numpy()
-            loss=-torch.mean(p1+p2)
-            
-            
-            
-            # loss=F.binary_cross_entropy(res,lbls)
-            
+            loss=loss_fcn(res,lbls,w_positive_tensor,w_negative_tensor)
+
             
             optimizer.zero_grad()
             loss.backward()
@@ -247,22 +246,7 @@ if __name__ == "__main__":
             
             
 
-            # loss=beta_loss(res,lbls)
-
-            
-            res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
-            
-            res_c_np=res_c.detach().cpu().numpy()
-            
-            p1=lbls*torch.log(res_c)*w_positive_tensor
-            p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
-            p1_np=p1.detach().cpu().numpy()
-            p2_np=p2.detach().cpu().numpy()
-            loss=-torch.mean(p1+p2)
-            
-            
-            
-            # loss=F.binary_cross_entropy(res,lbls)
+            loss=loss_fcn(res,lbls,w_positive_tensor,w_negative_tensor)
             
             
 
