@@ -74,7 +74,7 @@ if __name__ == "__main__":
     device = torch.device("cuda:0")
 
     # Parameters
-    params = {"batch_size": 64,
+    params = {"batch_size": 32,
               "shuffle": True,
               "num_workers":4,
               'collate_fn':Dataset.collate_fn}
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     gamma=0.1
     init_lr=0.01
     save_dir='../../tmp'
-    model_note='aug_adition_net_best_t'
+    model_note='aug_adition_net_best_t_smalerbatch_larger_model'
     
     best_t=1
     
