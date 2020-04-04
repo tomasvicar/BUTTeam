@@ -233,7 +233,7 @@ class Net_addition_grow_attention(nn.Module):
         return self.t
     
     
-    def __init__(self, levels=8,lvl1_size=6,input_size=12,output_size=9,convs_in_layer=3,init_conv=6,filter_size=13,attention_size=128):
+    def __init__(self, levels=8,lvl1_size=12,input_size=12,output_size=9,convs_in_layer=5,init_conv=8,filter_size=13,attention_size=128):
         super().__init__()
         self.levels=levels
         self.lvl1_size=lvl1_size

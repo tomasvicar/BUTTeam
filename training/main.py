@@ -84,7 +84,7 @@ if __name__ == "__main__":
     device = torch.device("cuda:0")
 
     # Parameters
-    params = {"batch_size": 32,
+    params = {"batch_size": 16,
               "shuffle": True,
               "num_workers":4,
               'collate_fn':Dataset.collate_fn}
