@@ -1,6 +1,6 @@
 from torch.utils import data
 from read_file import read_data
-from read_file import read_lbl_tom
+from read_file import read_lbl
 import numpy as np
 import torch 
 
@@ -17,11 +17,11 @@ class Dataset(data.Dataset):
         self.list_of_ids = list_of_ids
         self.split=split
         
-        self.MEANS=np.array([ 0.00313717,  0.00086543, -0.00454349, -0.00416486,  0.00102769,-0.00275855, -0.00108178,  0.00016227,  0.00010818, -0.00270446,0.00010818, -0.00156859])
+        self.MEANS=np.load('data_split/MEANS.npy')
     
-        self.STDS=np.array([121.40858639, 149.55139422, 121.14471528, 124.44668018,96.85791404, 120.87596136, 204.83819888, 295.70214234,300.9895724 , 309.04986076, 291.26254274, 260.78131754])
+        self.STDS==np.load('data_split/STDS.npy')
         
-        self.pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
+        self.pato_names=np.load('data_split/pato_names.npy')
 
     def __len__(self):
         """Return total number of data samples"""
@@ -77,7 +77,7 @@ class Dataset(data.Dataset):
         X=(X-self.MEANS.reshape(-1,1))/self.STDS.reshape(-1,1)
         
         
-        lbl = read_lbl_tom(self.path, file_name)
+        lbl = read_lbl(self.path, file_name)
         
         y=np.zeros((len(self.pato_names),1)).astype(np.float32)
         

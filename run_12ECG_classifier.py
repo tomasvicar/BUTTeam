@@ -3,23 +3,29 @@
 import torch
 import numpy as np
 import os
+from config import Config
 
 
 def run_12ECG_classifier(data,header_data,classes,model):
     
+    models=model
+    
     num_classes = len(classes)
-    current_label = np.zeros(num_classes, dtype=int)
-    current_score = np.zeros(num_classes)
+    current_label = np.zeros((len(models),num_classes))
+    current_score = np.zeros((len(models),num_classes))
+    
 
-    # t=model.get_t()
-    t=np.array([0.5959596 , 0.02626263, 0.82828283, 0.51515152, 0.46464646,0.74747475, 0.62626263, 0.22222222, 0.71717172])
-    # t=0.5
     
-    MEANS=np.array([ 0.00313717,  0.00086543, -0.00454349, -0.00416486,  0.00102769,-0.00275855, -0.00108178,  0.00016227,  0.00010818, -0.00270446,0.00010818, -0.00156859])
     
-    STDS=np.array([121.40858639, 149.55139422, 121.14471528, 124.44668018,96.85791404, 120.87596136, 204.83819888, 295.70214234,300.9895724 , 309.04986076, 291.26254274, 260.78131754])
-            
-    pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
+    MEANS=np.load('training/data_split/MEANS.npy')
+    
+    STDS=np.load('training/data_split/STDS.npy')
+    
+    pato_names=np.load('training/data_split/pato_names.npy')
+    
+    lens_all=np.load('training/data_split/lens.npy')
+    
+    batch=Config.train_batch_size
     
     order=[];
     for cl in classes:
@@ -27,38 +33,48 @@ def run_12ECG_classifier(data,header_data,classes,model):
             if pato==cl:
                 order.append(k)
     
-
-    data=(data-MEANS.reshape(-1,1))/STDS.reshape(-1,1)
     
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
     
-    lens=data.shape[1]
-    lens=torch.from_numpy(np.array(lens).astype(np.float32)).view(1).to(device)
+    data0=(data-MEANS.reshape(-1,1))/STDS.reshape(-1,1).copy()
     
-    # data=np.concatenate((data,np.zeros((data.shape[0],3000))),axis=1)
     
-    data=torch.from_numpy(np.reshape(data.astype(np.float32), (1,data.shape[0],data.shape[1]))).to(device)
  
- 
-    score = model(data,lens) 
     
-    score=score.detach().cpu().numpy()[0,:]
-    label = score>t
-    
-    
-    
-    
-    label=label[np.array(order)]
-    score=score[np.array(order)]
-    
-    
-    current_label[label] = 1
-    
-    for i in range(num_classes):
-        current_score[i] = np.array(score[i])
-    
+    for model_num,model in enumerate(models):
+        # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cpu")
+        
+        lens_sample=np.random.choice(lens_all, batch, replace=False)
+        max_len=np.max(lens_sample)
+        
+        data_new=np.zeros((data0.shape[0],max(max_len,data0.shape[1])))
+        data_new[:,:data0.shape[1]]=data0
+        
+        
+        
+        data_np=data_new.copy()
+        
+        lens=data_np.shape[1]
+        lens=torch.from_numpy(np.array(lens).astype(np.float32)).view(1).to(device)
+        
+        data=torch.from_numpy(np.reshape(data_np.astype(np.float32), (1,data_np.shape[0],data_np.shape[1]))).to(device)
+        
+        
+        score = model(data,lens) 
+        
+        score=score.detach().cpu().numpy()[0,:]
+        score=score[np.array(order)]
+        
+        label = (score>model.get_t()[0,:])
+        
+        
+        for i in range(num_classes):
+            current_score[model_num,i] = np.array(score[i])
+            current_label[model_num,i] = np.array(label[i])
 
+    current_score=np.mean(current_score,axis=0)
+    current_label=np.round(np.mean(current_label,axis=0)).astype(np.int)
+    
     return current_label, current_score
 
 
@@ -66,14 +82,20 @@ def run_12ECG_classifier(data,header_data,classes,model):
 
 def load_12ECG_model():
     # load the model from disk 
-    model_name='training' + os.sep  +  'best_models' + os.sep  + 'velkefiltry_1e-05_train_0.8749235_valid_0.72743636.pkl'
+    models_names_name='training/best_models/aug_attentintest_best_t__0.38516265.npy'
     
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
+    models=[]
     
-    loaded_model = torch.load(model_name,map_location=device)
+    models_names=np.load(models_names_name,allow_pickle=True)
     
-    loaded_model=loaded_model.eval().to(device)
+    for model_name in models_names:
+        # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cpu")
+        
+        loaded_model = torch.load('training/' + model_name,map_location=device)
+        
+        loaded_model=loaded_model.eval().to(device)
+        
+        models.append(loaded_model)
 
-
-    return loaded_model
+    return models

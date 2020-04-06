@@ -1,14 +1,14 @@
-import driver_tom
+import driver_py
 import evaluate_12ECG_score
 import numpy as np
 
-data_path='../test_data'
+data_path='../Training_WFDB'
 
 res_path='../res'
 
 
          
-driver_tom.driver(data_path,res_path)
+driver_py.driver(data_path,res_path)
 
 
 auroc,auprc,accuracy,f_measure,f_beta,g_beta = evaluate_12ECG_score.evaluate_12ECG_score(data_path,res_path)
