@@ -71,9 +71,18 @@ def run_12ECG_classifier(data,header_data,classes,model):
         for i in range(num_classes):
             current_score[model_num,i] = np.array(score[i])
             current_label[model_num,i] = np.array(label[i])
+            
+    splits=np.load('training/data_split/splits.npy',allow_pickle=True)
+    curent_name=header_data.split(' ')[0]
+    for k in range(len(models)):
+        all_names=splits[k]['valid']
+        for name in all_names:
+            if curent_name==name:
+                current_score[k,:]=np.nan
+                current_label[k,:]=np.nan
 
-    current_score=np.mean(current_score,axis=0)
-    current_label=np.round(np.mean(current_label,axis=0)).astype(np.int)
+    current_score=np.nanmean(current_score,axis=0)
+    current_label=np.round(np.nanmean(current_label,axis=0)).astype(np.int)
     
     return current_label, current_score
 

@@ -6,7 +6,7 @@ from train import train
 from shutil import copyfile
 
 
-# get_splits_means_stds_lens_counts()
+get_splits_means_stds_lens_counts()
 
 splits=np.load(Config.info_save_dir + os.sep +'splits.npy',allow_pickle=True)
 

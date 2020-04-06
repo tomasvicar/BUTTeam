@@ -19,7 +19,7 @@ class Dataset(data.Dataset):
         
         self.MEANS=np.load('data_split/MEANS.npy')
     
-        self.STDS==np.load('data_split/STDS.npy')
+        self.STDS=np.load('data_split/STDS.npy')
         
         self.pato_names=np.load('data_split/pato_names.npy')
 

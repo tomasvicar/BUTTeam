@@ -32,7 +32,7 @@ def train(names_train,names_valid,model_num):
     training_generator = Dataset(names_train, Config.DATA_PATH,'train')
     training_generator = data.DataLoader(training_generator,batch_size=Config.train_batch_size,num_workers= Config.train_num_workers, shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn)
 
-    validation_generator = Dataset(names_train, Config.DATA_PATH,'valid')
+    validation_generator = Dataset(names_valid, Config.DATA_PATH,'valid')
     validation_generator = data.DataLoader(validation_generator,batch_size=Config.valid_batch_size, num_workers=Config.valid_num_workers, shuffle=False,drop_last=False,collate_fn=Dataset.collate_fn)
 
 
@@ -95,21 +95,7 @@ def train(names_train,names_valid,model_num):
         
             
         model.set_t(log.t)   
-        
-        
-        
-        
-        plt.plot(log.trainig_loss_log,'b')
-        plt.plot(log.valid_loss_log,'r')
-        plt.title('loss')
-        plt.show()
-        
-        
-        plt.plot(log.trainig_beta_log,'b')
-        plt.plot(log.valid_beta_log,'g')
-        plt.title('geometric mean')
-        plt.show()
-        
+                
         lr=get_lr(optimizer)
         
         info= str(model_num) + '___' +str(epoch) + '_' + str(lr) + '_train_'  + str(log.trainig_beta_log[-1]) + '_valid_' + str(log.valid_beta_log[-1]) 

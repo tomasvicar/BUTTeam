@@ -1,0 +1,12 @@
+#PBS -N test33
+#PBS -S /bin/bash
+#PBS -l ncpus=12
+#PBS -l ngpus=1
+#PBS -l mem=24gb
+#PBS -l walltime=48:00:00
+cd $PBS_O_WORKDIR/
+
+source /home/user_pool_2/vicar/miniconda3/bin/activate
+conda activate pytorch
+
+python test_script_pytorch_gpu.py

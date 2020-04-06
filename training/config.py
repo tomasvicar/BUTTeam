@@ -8,12 +8,12 @@ class Config:
     DATA_PATH = "../../Training_WFDB/"
     
     train_batch_size = 32
-    train_num_workers=0
+    train_num_workers=4
     valid_batch_size = 32
-    valid_num_workers=0
+    valid_num_workers=4
 
-    max_epochs = 2#122
-    step_size=40
+    max_epochs = 107
+    step_size=35
     gamma=0.1
     init_lr=0.01
     
@@ -24,7 +24,7 @@ class Config:
     
     model_save_dir='../../tmp'
     
-    model_note='aug_attentintest_best_t'
+    model_note='no_pretrain'
     
     best_t=True
     
