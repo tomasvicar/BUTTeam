@@ -34,15 +34,15 @@ class Config:
     pretrained=None
     # pretrained='model_name'
     
-    levels=8
-    lvl1_size=6
+    levels=9
+    lvl1_size=8
     input_size=12
     output_size=9
-    convs_in_layer=3
-    init_conv=6
+    convs_in_layer=6
+    init_conv=8
     filter_size=13
     
     
-    ploting=True
+    ploting=False
     
     
