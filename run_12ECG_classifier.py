@@ -101,7 +101,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
 def load_12ECG_model():
     # load the model from disk 
     # models_names_name='training/best_models/no_pretrain__0.76311535.npy'
-    models_names_name='training/best_models/no_pretrain__no_pretrain__0.7499013.npy'
+    models_names_name='training/best_models/no_pretrain__0.7499013.npy'
     
     models=[]
     
