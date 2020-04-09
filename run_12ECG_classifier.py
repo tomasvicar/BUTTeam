@@ -75,16 +75,16 @@ def run_12ECG_classifier(data,header_data,classes,model):
             
             
             
-    splits=np.load('training/data_split/splits.npy',allow_pickle=True)
-    curent_name=header_data[0].split(' ')[0]
-    for k in range(len(models)):
-        all_names=splits[k]['train']
-        counter=0
-        for name in all_names:
-            if curent_name==name:
-                counter=counter+1
-                current_score[k,:]=np.nan
-                current_label[k,:]=np.nan
+    # splits=np.load('training/data_split/splits.npy',allow_pickle=True)
+    # curent_name=header_data[0].split(' ')[0]
+    # for k in range(len(models)):
+    #     all_names=splits[k]['train']
+    #     counter=0
+    #     for name in all_names:
+    #         if curent_name==name:
+    #             counter=counter+1
+    #             current_score[k,:]=np.nan
+    #             current_label[k,:]=np.nan
 
     current_score=np.nanmean(current_score,axis=0)
     current_label=np.round(np.nanmean(current_label,axis=0)).astype(np.int)
@@ -100,7 +100,8 @@ def run_12ECG_classifier(data,header_data,classes,model):
 
 def load_12ECG_model():
     # load the model from disk 
-    models_names_name='training/best_models/no_pretrain__0.76311535.npy'
+    # models_names_name='training/best_models/no_pretrain__0.76311535.npy'
+    models_names_name='training/best_models/no_pretrain__no_pretrain__0.7499013.npy'
     
     models=[]
     
