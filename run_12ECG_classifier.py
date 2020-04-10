@@ -93,6 +93,8 @@ def run_12ECG_classifier(data,header_data,classes,model):
     
     
     
+    
+    
     return current_label, current_score
 
 
@@ -100,8 +102,10 @@ def run_12ECG_classifier(data,header_data,classes,model):
 
 def load_12ECG_model():
     # load the model from disk 
-    models_names_name='training/best_models/no_pretrain__0.76311535.npy'
-    # models_names_name='training/best_models/no_pretrain__0.7499013.npy'
+    # models_names_name='training/best_models/z6na12conv__0.75622284.npy' ##0.7132331608211755
+    # models_names_name='training/best_models/conv12_8lvlu__0.75800914.npy' ####0.7224464697031729 
+    models_names_name='training/best_models/no_pretrain__0.76311535.npy' ### 0.7272554585131986
+    # models_names_name='training/best_models/no_pretrain__0.7499013.npy'  ### 0.7130929532735658
     
     models=[]
     
