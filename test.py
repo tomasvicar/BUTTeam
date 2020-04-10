@@ -2,10 +2,21 @@ import driver_py
 import evaluate_12ECG_score
 import evaluate_12ECG_score_nan
 import numpy as np
+import shutil
+import os
 
-data_path='../Training_WFDB'
+# data_path='../Training_WFDB'
+data_path='../prvnich1000'
 
 res_path='../res'
+
+shutil.rmtree(res_path)
+
+
+try:
+    os.mkdir(res_path)
+except:
+    pass
 
 
          

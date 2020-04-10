@@ -44,17 +44,21 @@ def run_12ECG_classifier(data,header_data,classes,model):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         # device = torch.device("cpu")
         
+        
         lens_sample=np.random.choice(lens_all, batch, replace=False)
         max_len=np.max(lens_sample)
         
         data_new=np.zeros((data0.shape[0],max(max_len,data0.shape[1])))
         data_new[:,:data0.shape[1]]=data0
         
-        
-        
         data_np=data_new.copy()
         
-        lens=data_np.shape[1]
+        
+        
+        data_np=data0.copy()
+        
+        
+        lens=data0.shape[1]
         lens=torch.from_numpy(np.array(lens).astype(np.float32)).view(1).to(device)
         
         data=torch.from_numpy(np.reshape(data_np.astype(np.float32), (1,data_np.shape[0],data_np.shape[1]))).to(device)
@@ -63,9 +67,12 @@ def run_12ECG_classifier(data,header_data,classes,model):
         score = model(data,lens) 
         
         score=score.detach().cpu().numpy()[0,:]
-        score=score[np.array(order)]
         
         label = (score>model.get_t()[0,:])
+        # label = (score>0.5)
+        
+        score=score[np.array(order)]
+        label=label[np.array(order)]
         
         
         for i in range(num_classes):
@@ -75,16 +82,16 @@ def run_12ECG_classifier(data,header_data,classes,model):
             
             
             
-    # splits=np.load('training/data_split/splits.npy',allow_pickle=True)
-    # curent_name=header_data[0].split(' ')[0]
-    # for k in range(len(models)):
-    #     all_names=splits[k]['train']
-    #     counter=0
-    #     for name in all_names:
-    #         if curent_name==name:
-    #             counter=counter+1
-    #             current_score[k,:]=np.nan
-    #             current_label[k,:]=np.nan
+    splits=np.load('training/data_split/splits.npy',allow_pickle=True)
+    curent_name=header_data[0].split(' ')[0]
+    for k in range(len(models)):
+        all_names=splits[k]['train']
+        counter=0
+        for name in all_names:
+            if curent_name==name:
+                counter=counter+1
+                current_score[k,:]=np.nan
+                current_label[k,:]=np.nan
 
     current_score=np.nanmean(current_score,axis=0)
     current_label=np.round(np.nanmean(current_label,axis=0)).astype(np.int)
@@ -98,13 +105,16 @@ def run_12ECG_classifier(data,header_data,classes,model):
     return current_label, current_score
 
 
+# 0.8512470205326718
+# 0.8294387709634904
+
 
 
 def load_12ECG_model():
     # load the model from disk 
     # models_names_name='training/best_models/z6na12conv__0.75622284.npy' ##0.7132331608211755
     # models_names_name='training/best_models/conv12_8lvlu__0.75800914.npy' ####0.7224464697031729 
-    models_names_name='training/best_models/no_pretrain__0.76311535.npy' ### 0.7272554585131986
+    models_names_name='training/best_models/no_pretrain__0.76311535.npy' ### 0.7272554585131986   
     # models_names_name='training/best_models/no_pretrain__0.7499013.npy'  ### 0.7130929532735658
     
     models=[]
