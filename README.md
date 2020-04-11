@@ -1,27 +1,7 @@
-# ECGuru10-PhysioNetCHallenge2020
+# BUTTeam PhysioNetCHallenge2020
 
 
 [odkaz challange](https://physionetchallenges.github.io/2020/#rules-and-deadlines)
-
-
-Kdyžtak tady je prezenatce s úvodem do gitu:
-
-\\deza.feec.vutbr.cz\grp\UBMI\VYUKA\UCITEL\python
-
-Data a větší soubory dávejte sem \\nas1.ubmi.feec.vutbr.cz\Data\CARDIO1\CinC_Challenge_2020
-
-Podrobnější informace (včetně např. četnosti jednotlivých kategorií) lze vyčíst zde: http://2018.icbeb.org/Challenge.html
-
-
-#### Aby nám tu ta spolupráce nějak rozumně fungovala, tak zkuste dodržovat tyto zásady:
-
-* nejaké ucelenější části kódu dávejte do oddělené složky
-
-* každý si po naklonování vytvořte nový branch se svým jménem - až vám ta část nějak funguje, tak ho napojte na master
-
-* udržujte pořádek - mažte zbytečné soubory a části kódu (pokud už jednou na githubu byly uloženy tak je vždy jde zpětně dohledat ;))
-
-* důležité informace připisujte sem do readme (nejsnadněji upravujte přímo přes github na master branchu)
 
 
 ## Patologie:
@@ -40,11 +20,11 @@ Podrobnější informace (včetně např. četnosti jednotlivých kategorií) lz
 
 
 ## co zkusit:
-- [ ] crossvalidační enamble
-- [ ] předučení na naších datech
+- [ ] crossvalidační enamble - při submitnutí zatím nefungu - proč?
+- [x] předučení na našich datech - znoršuje
+
 - [ ] replikace signálů místo doplňování nulama
 - [ ] augmentace prodlužováním a zkracováním (nalepit na konec kus z prostředka)
-- [ ]
 
 
 
