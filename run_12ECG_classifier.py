@@ -62,9 +62,9 @@ def run_12ECG_classifier(data,header_data,classes,model):
         
 
         ## if model is using cuda, then send data to cuda
-        cuda_check = model.is_cuda
+        cuda_check = next(model.parameters()).is_cuda
         if cuda_check:
-            cuda_device = model.get_device()
+            cuda_device = next(model.parameters()).get_device()
             device = torch.device('cuda:' + str(cuda_device) )
             lens=lens.to(device)
             data=data.to(device)
@@ -126,7 +126,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
 def load_12ECG_model():
     
  
-    models_names_name='training/best_models/no_pretrain__0.76311535.npy'
+    models_names_name='training/best_models/train_test_split__0.7394955.npy'
     
     models=[]
     
@@ -136,8 +136,8 @@ def load_12ECG_model():
     ## load each model and save to the list
     for model_name in models_names:
         
-        # device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
-        device = torch.device("cpu")
+        device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
+        # device = torch.device("cpu")
         
         
         loaded_model = torch.load('training/' + model_name,map_location=device)

@@ -21,7 +21,7 @@ class Config:
     
     info_save_dir='data_split'
     split_ratio=[8,2]
-    num_of_splits=11
+    num_of_splits=3
     
     model_save_dir='../../tmp'
     
@@ -37,11 +37,11 @@ class Config:
     
     ## network setting
     levels=8
-    lvl1_size=8
+    lvl1_size=4
     input_size=12
     output_size=9
     convs_in_layer=2
-    init_conv=8
+    init_conv=4
     filter_size=13
     
     

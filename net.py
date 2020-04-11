@@ -175,6 +175,11 @@ class Net_addition_grow(nn.Module):
     
     def save_log(self,log):
         self.log=log
+        
+    def save_config(self,config):  
+        self.config=config
+        
+        
     
     def plot_training(self):
         

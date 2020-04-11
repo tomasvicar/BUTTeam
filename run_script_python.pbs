@@ -1,4 +1,4 @@
-#PBS -N cinc_train
+#PBS -N cinc_test
 #PBS -S /bin/bash
 #PBS -l ncpus=12
 #PBS -l ngpus=1
@@ -9,4 +9,6 @@ cd $PBS_O_WORKDIR/
 source /home/user_pool_2/vicar/miniconda3/bin/activate
 conda activate pytorch
 
-python main.py
+python driver.py "../test_split_tmp" "../res"
+
+python evaluate_12ECG_score.py "../test_split_tmp" "../res"

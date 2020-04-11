@@ -8,7 +8,7 @@ from shutil import copyfile
 def main():
     
     ## prepare data statistics for normalization and create random splits for crossvalidation
-    # get_splits_means_stds_lens_counts()
+    get_splits_means_stds_lens_counts()
     
     ## load crossvalidation train/valid data splits
     splits=np.load(Config.info_save_dir + os.sep +'splits.npy',allow_pickle=True)
