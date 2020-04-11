@@ -119,7 +119,7 @@ class Net_addition_grow(nn.Module):
             device = torch.device('cuda:' + str(cuda_device) )
             xx=xx.to(device)
         
-        # x=torch.cat((x,xx),2)### add zeros to signal
+        x=torch.cat((x,xx),2)### add zeros to signal
         
         x.requires_grad=True
         
@@ -175,6 +175,11 @@ class Net_addition_grow(nn.Module):
     
     def save_log(self,log):
         self.log=log
+        
+    def save_config(self,config):  
+        self.config=config
+        
+        
     
     def plot_training(self):
         

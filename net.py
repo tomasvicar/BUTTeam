@@ -82,7 +82,7 @@ class Net_addition_grow(nn.Module):
         
         
         
-        
+        ## weigths initialization wih xavier method
         for i, m in enumerate(self.modules()):
             if isinstance(m, nn.Conv2d):
                 init.xavier_normal_(m.weight)
@@ -93,10 +93,8 @@ class Net_addition_grow(nn.Module):
     def forward(self, x,lens):
         
         
-        
-
-        
-                
+        ## make signal len be divisible by 2**number of levels 
+        ## replace rest by zeros
         for signal_num in range(list(x.size())[0]):
             
             k=int(np.floor(lens[signal_num].cpu().numpy()/(2**(self.levels-1)))*(2**(self.levels-1)))
@@ -104,36 +102,33 @@ class Net_addition_grow(nn.Module):
             x[signal_num,:,k:]=0
         
 
-        
+        ## pad with more zeros  -  add as many zeros as convolution of all layers can proppagete numbers
         n=(self.filter_size-1)/2
-        
         padded_length=n
-        
         for p in range(self.levels):
             for c in range(self.convs_in_layer):
                 padded_length=padded_length+2**p*n
-        
         padded_length=padded_length+2**p*n+256 # 256 for sure
-        
-        
+
         
         shape=list(x.size())
         xx=torch.zeros((shape[0],shape[1],int(padded_length)),dtype=x.dtype)
-        
         cuda_check = x.is_cuda
         if cuda_check:
             cuda_device = x.get_device()
             device = torch.device('cuda:' + str(cuda_device) )
             xx=xx.to(device)
         
-        # x=torch.cat((x,xx),2)
+        x=torch.cat((x,xx),2)### add zeros to signal
         
         x.requires_grad=True
+        
         
         x=self.init_conv(x)
         
         x0=x
         
+        ## aply all convolutions
         layer_num=-1
         for lvl_num in range(self.levels):
             
@@ -145,6 +140,7 @@ class Net_addition_grow(nn.Module):
                 
                 x=self.layers[layer_num](x)
                 
+            ## skip conection to previous layer and to the input
             x=torch.cat((F.avg_pool1d(x0,2**lvl_num,2**lvl_num),x,y),1)
             
             x=F.max_pool1d(x, 2, 2)
@@ -153,7 +149,7 @@ class Net_addition_grow(nn.Module):
             
         x=self.conv_final(x)
         
-        
+        ### replace padded parts of signals by -inf => it will be not used in poolig
         for signal_num in range(list(x.size())[0]):
             
             k=int(np.floor(lens[signal_num].cpu().numpy()/(2**(self.levels-1))))

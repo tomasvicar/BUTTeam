@@ -118,6 +118,7 @@ def train(names_train,names_valid,model_num):
         model_name=Config.model_save_dir+ os.sep + Config.model_note + info  + '.pkl'
         log.save_log_model_name(model_name)
         model.save_log(log)
+        model.save_config(Config)
         torch.save(model,model_name)
             
         ## plot loss and beta score

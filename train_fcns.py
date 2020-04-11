@@ -18,21 +18,24 @@ class Log:
         self.tmp_loss_log=[]
         
     def save_tmp_log(self,lbls,res,loss):
+        ## save values - epoch mean will be calucated later
         self.lbls_np_log.append(lbls.detach().cpu().numpy())
         self.res_np_log.append(res.detach().cpu().numpy())
         self.tmp_loss_log.append(loss.detach().cpu().numpy())
     
     def save_log_data_and_clear_tmp(self,train_or_test):
-        
+
         lbls_np_log=np.concatenate(self.lbls_np_log,axis=0)
         res_np_log=np.concatenate(self.res_np_log,axis=0)
         if Config.best_t:
+            ## find optimal treshold for each pathology
             self.t=get_best_ts(res_np_log,lbls_np_log)
         else:
             self.t=0.5
+        ## get beta score - challage metric
         Fbeta,Gbeta,geom_mean= compute_beta_score(lbls_np_log, res_np_log>self.t, 2, 9)
         
-
+        ## save appchoch averages
         if train_or_test=='train':
             self.trainig_loss_log.append(np.mean(self.tmp_loss_log))
             self.trainig_beta_log.append(geom_mean)
@@ -42,12 +45,14 @@ class Log:
         else:
             raise ValueError('train or test')
     
+        ## crear tmp epoch data buffers
         self.lbls_np_log=[]
         self.res_np_log=[]
         self.tmp_loss_log=[]
         
 
     def save_log_model_name(self,model_name):
+        ## store model names
         self.model_names.append(model_name)
     
     
@@ -145,7 +150,7 @@ def get_lr(optimizer):
     
     
 def wce(res,lbls,w_positive_tensor,w_negative_tensor):
-    
+    ## weighted crossetropy - weigths are for positive and negative 
     res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
     p1=lbls*torch.log(res_c)*w_positive_tensor
@@ -155,7 +160,7 @@ def wce(res,lbls,w_positive_tensor,w_negative_tensor):
     
 
 def beta_loss(output, labels,w_positive_tensor,w_negative_tensor,beta=2):
-
+    ## loss inspired by challage metric - binary values are replaced by s
     smooth = 0.1
 
     TP=(labels)*(output)

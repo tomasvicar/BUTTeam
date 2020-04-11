@@ -5,7 +5,8 @@ class Config:
     
     pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
     
-    DATA_PATH = "../../Training_WFDB/"
+    # DATA_PATH = "../../Training_WFDB/"
+    DATA_PATH ="../../train_split_tmp"
     
     train_batch_size = 32
     train_num_workers=4
@@ -20,11 +21,11 @@ class Config:
     
     info_save_dir='data_split'
     split_ratio=[8,2]
-    num_of_splits=10
+    num_of_splits=11
     
     model_save_dir='../../tmp'
     
-    model_note='conv12_8lvlu'
+    model_note='train_test_split'
     
     best_t=True
     
@@ -36,11 +37,11 @@ class Config:
     
     ## network setting
     levels=8
-    lvl1_size=12
+    lvl1_size=8
     input_size=12
     output_size=9
-    convs_in_layer=12
-    init_conv=12
+    convs_in_layer=2
+    init_conv=8
     filter_size=13
     
     
