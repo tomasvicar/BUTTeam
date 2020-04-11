@@ -24,22 +24,23 @@ class Config:
     
     model_save_dir='../../tmp'
     
-    model_note='no_pretrain'
+    model_note='conv12_8lvlu'
     
     best_t=True
     
     loss_fcn='wce'
     
     
-    pretrained='best_models/pretraining0___277_0.001_train_0.7466433_valid_0.5399519.pkl'
-    # pretrained='model_name'
+    # pretrained='best_models/pretraining0___277_0.001_train_0.7466433_valid_0.5399519.pkl'
+    pretrained=None
     
-    levels=9
-    lvl1_size=8
+    ## network setting
+    levels=8
+    lvl1_size=12
     input_size=12
     output_size=9
-    convs_in_layer=6
-    init_conv=8
+    convs_in_layer=12
+    init_conv=12
     filter_size=13
     
     

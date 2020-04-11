@@ -7,12 +7,12 @@ from config import Config
 
 def get_splits_means_stds_lens_counts():
 
-    
+    ## load save folder, and how to split data form config
     DATA_PATH=Config.DATA_PATH
     split_ratio=Config.split_ratio
     num_of_splits=Config.num_of_splits
     
-    
+    # load names of pathologies from confing  - is is our pahology ordering
     pato_names=Config.pato_names
     
     try:
@@ -21,7 +21,7 @@ def get_splits_means_stds_lens_counts():
         pass
     
     
-    
+    ##get all file names
     names=[]
     for root, dirs, files in os.walk(DATA_PATH):
         for name in files:
@@ -30,6 +30,7 @@ def get_splits_means_stds_lens_counts():
                 names.append(name)
     
     
+    ## measure signal statistics for normalization
     labels=[]
     means=[]
     stds=[]
@@ -49,14 +50,13 @@ def get_splits_means_stds_lens_counts():
         
         labels.append(lbl)
         
-        
     MEANS=np.mean(np.stack(means,axis=1),axis=1)
     STDS=np.mean(np.stack(stds,axis=1),axis=1)
     
     
     
     
-    
+    ## create more-hot-encoding to measure count of each pathology in data
     more_hot_lbls=[]
     for k,lbl in enumerate(labels):
           
@@ -70,12 +70,12 @@ def get_splits_means_stds_lens_counts():
                     res[kk]=1
                 
         more_hot_lbls.append(res>0)
-        
-        
-    
+
     tmp=np.stack(more_hot_lbls,axis=1)
     
     lbl_counts=np.sum(tmp,axis=1)
+    
+    
     
     num_of_sigs=len(lens)
     
@@ -93,7 +93,7 @@ def get_splits_means_stds_lens_counts():
     print(len(lens))
     
     
-    
+    ## save statistics
     np.save(Config.info_save_dir+os.sep+'MEANS.npy', np.array(MEANS))
     np.save(Config.info_save_dir+os.sep+'STDS.npy', np.array(STDS))
     np.save(Config.info_save_dir+os.sep+'lbl_counts.npy', np.array(lbl_counts))
@@ -101,8 +101,8 @@ def get_splits_means_stds_lens_counts():
     
     
     
+    ## create random crossvalidation train/test splits
     np.random.seed(666)
-    
     splits=[]
     for k in range(num_of_splits):
         split_ratio_ind=int(np.floor(split_ratio[0]/(split_ratio[0]+split_ratio[1])*len(names)))

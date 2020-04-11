@@ -40,7 +40,9 @@ class Dataset(data.Dataset):
         sig_len=X.shape[1]
         signal_num=X.shape[0]
         
+        ##augmentation
         if self.split=='train':
+            ##random circshift
             if torch.rand(1).numpy()[0]>0.3:
                 
                 
@@ -48,7 +50,7 @@ class Dataset(data.Dataset):
                 
                 X=np.roll(X, shift, axis=1)
                 
-                
+            ## random stretch -    
             if torch.rand(1).numpy()[0]>0.3:
                 
                 max_resize_change=0.2
@@ -61,6 +63,7 @@ class Dataset(data.Dataset):
                     Y[k,:]=np.interp(np.linspace(0, sig_len-1, new_len),np.linspace(0, sig_len-1, sig_len),X[k,:])
                 X=Y
                 
+            ## random multiplication of each lead by a number
             if torch.rand(1).numpy()[0]>0.3:
                 
                 max_mult_change=0.2
@@ -71,48 +74,47 @@ class Dataset(data.Dataset):
                     
                 
                 
-                
-                
-        
+        ## normalization
         X=(X-self.MEANS.reshape(-1,1))/self.STDS.reshape(-1,1)
         
         
+        ## laod label
         lbl = read_lbl(self.path, file_name)
-        
-        y=np.zeros((len(self.pato_names),1)).astype(np.float32)
-        
         lbl=lbl.split(',')
-    
+        
+        ## create more hot encoding
+        y=np.zeros((len(self.pato_names),1)).astype(np.float32)
         for kk,p in enumerate(self.pato_names):
             for lbl_i in lbl:
                 if lbl_i.find(p)>-1:
                     y[kk]=1
-                    
-                    
-#        X=torch.from_numpy(X)
-#        y=torch.from_numpy(y)
 
         return X,y
     
     def collate_fn(data):
+        ## this take list of samples and put them into batch
         
+        ##pad with zeros
         pad_val=0
         
+        ## get list of singals and its lengths
         seqs, lbls = zip(*data)
         
         lens = [seq.shape[1] for seq in seqs]
         
-        
+        ## pad shorter signals with zeros to make them same length
         padded_seqs =pad_val*np.ones((len(seqs),seqs[0].shape[0], np.max(lens))).astype(np.float32)
         for i, seq in enumerate(seqs):
             end = lens[i]
             padded_seqs[i,:, :end] = seq
         
+        
+        ## stack and reahape signal lengts to 10 vector
         lbls=np.stack(lbls,axis=0)
         lbls=lbls.reshape(lbls.shape[0:2])
-        
         lens = np.array(lens).astype(np.float32)
         
+        ## numpy -> torch tensor
         padded_seqs=torch.from_numpy(padded_seqs)
         lbls=torch.from_numpy(lbls)
         lens=torch.from_numpy(lens)
