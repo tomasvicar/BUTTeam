@@ -5,8 +5,8 @@ import numpy as np
 import shutil
 import os
 
-# data_path='../Training_WFDB'
-data_path='../prvnich1000'
+data_path='../Training_WFDB'
+# data_path='../prvnich1000'
 
 res_path='../res'
 

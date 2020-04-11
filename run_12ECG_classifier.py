@@ -41,7 +41,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
  
     
     for model_num,model in enumerate(models):
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
         # device = torch.device("cpu")
         
         
@@ -54,8 +54,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
         data_np=data_new.copy()
         
         
-        
-        data_np=data0.copy()
+        # data_np=data0.copy()
         
         
         lens=data0.shape[1]
@@ -122,7 +121,8 @@ def load_12ECG_model():
     models_names=np.load(models_names_name,allow_pickle=True)
     
     for model_name in models_names:
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
+        
         # device = torch.device("cpu")
         
         loaded_model = torch.load('training/' + model_name,map_location=device)
