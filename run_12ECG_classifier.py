@@ -94,16 +94,16 @@ def run_12ECG_classifier(data,header_data,classes,model):
             
     ## check if this sample was used for training of each model , and not to use its prediction if it was used
     
-    splits=np.load('training/data_split/splits.npy',allow_pickle=True)
-    curent_name=header_data[0].split(' ')[0]
-    for k in range(len(models)):
-        all_names=splits[k]['train']
-        counter=0
-        for name in all_names:
-            if curent_name==name:
-                counter=counter+1
-                current_score[k,:]=np.nan
-                current_label[k,:]=np.nan
+    # splits=np.load('training/data_split/splits.npy',allow_pickle=True)
+    # curent_name=header_data[0].split(' ')[0]
+    # for k in range(len(models)):
+    #     all_names=splits[k]['train']
+    #     counter=0
+    #     for name in all_names:
+    #         if curent_name==name:
+    #             counter=counter+1
+    #             current_score[k,:]=np.nan
+    #             current_label[k,:]=np.nan
     
 
 
@@ -136,8 +136,8 @@ def load_12ECG_model():
     ## load each model and save to the list
     for model_name in models_names:
         
-        device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
-        # device = torch.device("cpu")
+        # device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
+        device = torch.device("cpu")
         
         
         loaded_model = torch.load('training/' + model_name,map_location=device)
