@@ -9,6 +9,4 @@ cd $PBS_O_WORKDIR/
 source /home/user_pool_2/vicar/miniconda3/bin/activate
 conda activate pytorch
 
-python driver.py "../test_split_tmp" "../res"
-
-python evaluate_12ECG_score.py "../test_split_tmp" "../res"
+python test.py

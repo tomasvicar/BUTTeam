@@ -2,8 +2,8 @@
 
 import torch
 import numpy as np
-from config import Config
-
+import sys
+sys.path.append('training')
 
 def run_12ECG_classifier(data,header_data,classes,model):
     
@@ -22,7 +22,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
     STDS=np.load('training/data_split/STDS.npy')
     pato_names=np.load('training/data_split/pato_names.npy')
     lens_all=np.load('training/data_split/lens.npy')
-    batch=Config.train_batch_size
+    batch=models[0].config.train_batch_size
     
     
     ## how to reorder pathologies from our to their ordering
@@ -94,16 +94,16 @@ def run_12ECG_classifier(data,header_data,classes,model):
             
     ## check if this sample was used for training of each model , and not to use its prediction if it was used
     
-    # splits=np.load('training/data_split/splits.npy',allow_pickle=True)
-    # curent_name=header_data[0].split(' ')[0]
-    # for k in range(len(models)):
-    #     all_names=splits[k]['train']
-    #     counter=0
-    #     for name in all_names:
-    #         if curent_name==name:
-    #             counter=counter+1
-    #             current_score[k,:]=np.nan
-    #             current_label[k,:]=np.nan
+    splits=np.load('training/data_split/splits.npy',allow_pickle=True)
+    curent_name=header_data[0].split(' ')[0]
+    for k in range(len(models)):
+        all_names=splits[k]['train']
+        counter=0
+        for name in all_names:
+            if curent_name==name:
+                counter=counter+1
+                current_score[k,:]=np.nan
+                current_label[k,:]=np.nan
     
 
 
@@ -126,7 +126,7 @@ def run_12ECG_classifier(data,header_data,classes,model):
 def load_12ECG_model():
     
  
-    models_names_name='training/best_models/train_test_split__0.7394955.npy'
+    models_names_name='training/best_models/small_model__0.7635788.npy'
     
     models=[]
     
