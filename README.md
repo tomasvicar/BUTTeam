@@ -1,5 +1,5 @@
 # BUTTeam PhysioNetCHallenge2020
-
+![](notes/logo.png)
 
 [odkaz challange](https://physionetchallenges.github.io/2020/#rules-and-deadlines)
 
