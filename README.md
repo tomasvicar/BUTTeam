@@ -20,12 +20,14 @@
 
 
 ## co zkusit:
-- [ ] crossvalidační enamble - při submitnutí zatím nefungu - proč?
+- [x] crossvalidační enamble
 - [x] předučení na našich datech - znoršuje
 
 - [ ] replikace signálů místo doplňování nulama
 - [ ] augmentace prodlužováním a zkracováním (nalepit na konec kus z prostředka)
-
+- [ ] síť jako google net - ruzné druhy konvolucí a ať si síť vybere sama
+- [ ] attention vrstva (už sem zkoušel ale nefungovala - comity 'implementace attentin místo poolingu' a 'nefunkční transformer :(')
+- [ ] augmentace pomocí GAN
 
 
 
