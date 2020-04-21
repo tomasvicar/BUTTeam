@@ -28,7 +28,7 @@
 - [ ] síť jako google net - ruzné druhy konvolucí a ať si síť vybere sama
 - [ ] attention vrstva (už sem zkoušel ale nefungovala - comity 'implementace attentin místo poolingu' a 'nefunkční transformer :(')
 - [ ] augmentace pomocí GAN
-
+- [ ] optimalzace hyperparametrů - nejlíp Bayesovská ;)
 
 
 
