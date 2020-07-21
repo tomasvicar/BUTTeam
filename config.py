@@ -1,5 +1,6 @@
 import transforms
 import table
+from utils import wce
 
 class Config:
     
@@ -11,7 +12,14 @@ class Config:
     VALID_NUM_WORKERS=0
     
     BATCH_TRAIN=32
-    BATCH_VALID=8
+    BATCH_VALID=32
+    
+    MAX_EPOCH=107
+    STEP_SIZE=35
+    GAMMA=0.1
+    INIT_LR=0.01
+    
+    LOSS_FCN=wce
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.ZScore(mean=0, std=1),

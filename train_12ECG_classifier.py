@@ -8,6 +8,7 @@ import loader
 import glob
 import numpy as np
 from config import Config
+from log import Log
 
 def train_12ECG_classifier(input_directory, output_directory):
     
@@ -23,7 +24,7 @@ def train_12ECG_classifier(input_directory, output_directory):
     train_ind = permuted_idx[:split_ratio_ind]
     valid_ind = permuted_idx[split_ratio_ind:]
     partition = {"train": [file_list[file_idx] for file_idx in train_ind],
-        "validation": [file_list[file_idx] for file_idx in valid_ind]}
+        "valid": [file_list[file_idx] for file_idx in valid_ind]}
     
     
     # Train dataset generator
@@ -31,8 +32,11 @@ def train_12ECG_classifier(input_directory, output_directory):
     training_generator = data.DataLoader(training_set,batch_size=Config.BATCH_TRAIN,num_workers=Config.TRAIN_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn )
     
     
-    validation_set = dataset.Dataset(partition["validation"],transform=Config.TRANSFORM_DATA_VALID,encode=Config.TRANSFORM_LBL)
+    validation_set = dataset.Dataset(partition["valid"],transform=Config.TRANSFORM_DATA_VALID,encode=Config.TRANSFORM_LBL)
     validation_generator = data.DataLoader(validation_set,batch_size=Config.BATCH_VALID,num_workers=num_workers=Config.VALID_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn )
+    
+    
+    
     
     
     
