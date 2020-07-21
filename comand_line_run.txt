@@ -1,3 +1,0 @@
-python driver.py "../test_split_tmp" "../res"
-
-python evaluate_12ECG_score.py "../test_split_tmp" "../res"
