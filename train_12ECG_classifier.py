@@ -27,11 +27,11 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     
     # Train dataset generator
-    training_set = dataset.Dataset( partition["train"],transform=Config.TRANSFORM_DATA,encode=Config.TRANSFORM_LBL)
+    training_set = dataset.Dataset( partition["train"],transform=Config.TRANSFORM_DATA_TRAIN,encode=Config.TRANSFORM_LBL)
     training_generator = data.DataLoader(training_set,batch_size=Config.BATCH_TRAIN,num_workers=Config.TRAIN_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn )
     
     
-    validation_set = dataset.Dataset(partition["validation"],transform=config.TRANSFORM["data"],encode=config.TRANSFORM["labels"])
+    validation_set = dataset.Dataset(partition["validation"],transform=Config.TRANSFORM_DATA_VALID,encode=Config.TRANSFORM_LBL)
     validation_generator = data.DataLoader(validation_set,batch_size=Config.BATCH_VALID,num_workers=num_workers=Config.VALID_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn )
     
     
