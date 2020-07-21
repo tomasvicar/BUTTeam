@@ -6,7 +6,7 @@ from config import Config
 
 if __name__ == '__main__':
     # Parse arguments.
-    input_directory = Config.DATA_PATH
+    input_directory = '../data'
     output_directory = '42'
 
     if not os.path.isdir(output_directory):

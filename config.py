@@ -1,10 +1,10 @@
 import transforms
 import table
 from utils import wce
+import torch
 
 class Config:
     
-    DATA_PATH='../data'
     
     SPLIT_RATIO=[9,1]
 
@@ -19,7 +19,20 @@ class Config:
     GAMMA=0.1
     INIT_LR=0.01
     
+    DEVICE=torch.device("cuda:0")
+    
     LOSS_FCN=wce
+    
+    LEVELS=8
+    LVL1_SIZE=4
+    INPUT_SIZE=12
+    OUTPUT_SIZE=9
+    CONVS_IN_LAYERS=2
+    INIT_CONV=4
+    FILTER_SIZE=13
+    
+    
+    
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.ZScore(mean=0, std=1),
