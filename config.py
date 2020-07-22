@@ -1,7 +1,7 @@
-import transforms
-import table
+
 from utils import wce
 import torch
+from read_file import read_table_used
 
 class Config:
     
@@ -31,20 +31,25 @@ class Config:
     INIT_CONV=4
     FILTER_SIZE=13
     
+
+    HASH_TABLE=read_table_used()
+    
+    
+    # TRANSFORM_DATA_TRAIN=transforms.Compose([
+    #     transforms.ZScore(mean=0, std=1),
+    #     transforms.HardClip(threshold=2500),
+    #     transforms.RandomVerticalFlip(p=0.2),
+    #     ])
+    
+    # TRANSFORM_DATA_VALID=transforms.Compose([
+    #     transforms.ZScore(mean=0, std=1),
+    #     transforms.HardClip(threshold=2500),
+    #     ])
+    
+    # TRANSFORM_LBL=transforms.Compose([
+    #     transforms.OneHot(table),
+    #     ])
     
     
     
-    TRANSFORM_DATA_TRAIN=transforms.Compose([
-        transforms.ZScore(mean=0, std=1),
-        transforms.HardClip(threshold=2500),
-        transforms.RandomVerticalFlip(p=0.2),
-        ]),
     
-    TRANSFORM_DATA_VALID=transforms.Compose([
-        transforms.ZScore(mean=0, std=1),
-        transforms.HardClip(threshold=2500),
-        ])
-    
-    TRANSFORM_LBL=transforms.Compose([
-        transforms.OneHot(table),
-        ]),

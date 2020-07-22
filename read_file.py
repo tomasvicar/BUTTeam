@@ -9,13 +9,50 @@ def read_data(path, file_name):
     data_dict = io.loadmat(os.path.join(path, file_name))
     return data_dict["val"]
 
+def read_table_used(path=''):
+        """Function reads the table with ALL the diagnosis codes."""
+
+        reader = pandas.read_csv(f'{path}dx_mapping_scored.csv', usecols=[1, 2])
+        reader.columns = ["Code", "Abb"]
+        
+        snomeds=reader.Code
+        abb=reader.Abb
+        
+        
+        equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'],
+                      ['427172004', '17338001']]
+        
+        lbs_to_change = [equivalent_classes[0][1], equivalent_classes[1][1], equivalent_classes[2][1]]
+        
+        
+        snomeds=[str(x) for x in snomeds]
+        
+        
+        keep=[]
+        for code_idx, code in enumerate(snomeds):
+            if code == lbs_to_change[0]:
+                pass
+            elif code == lbs_to_change[1]:
+                pass
+            elif code == lbs_to_change[2]:
+                pass
+            else:
+        
+                keep.append(code_idx)
+        snomeds=[snomeds[x] for x in keep]
+        abb=[abb[x] for x in keep]
+        
+        lbl_code_hash={'snomeds':snomeds,'abb':abb}
+        
+        return lbl_code_hash
+
 
 class LabelReader:
-    def __init__(self, table_path='dx_mapping_scored.csv'):
+    def __init__(self, table_path=''):
         self.table = self.read_table(table_path)
 
 
-    def read_table(self, path):
+    def read_table(self, path=''):
         """Function reads the table with ALL the diagnosis codes."""
 
         reader = pandas.read_csv(f'{path}Dx_map.csv')
@@ -66,11 +103,9 @@ class LabelReader:
 
 
                     break
-            print(list_parameters)
         file.close()
 
         list_parameters = self.code_map(self.table, list_parameters)
-        print(list_parameters)
         return list_parameters
 
     def code_map(self, lbl_code_hash, list_parameters):
@@ -79,17 +114,6 @@ class LabelReader:
         test_list = [int(i) for i in list_parameters[-1]]
         codes = [lbl_code_hash[x] for x in test_list]
         list_parameters.append(codes)
-        print(list_parameters)
 
         return list_parameters
 
-path_table = "/Users/petranovotna/Library/Mobile Documents/com~apple~CloudDocs/PhD/2020_CinC_challenge/BUTTeam-master/"
-labelReader = LabelReader(path_table)
-path_name = "/Users/petranovotna/PycharmProjects/data_challenge_2/Training_2/Q0001"
-path_name_2 = "/Users/petranovotna/PycharmProjects/data_challenge_2/Training_2/"
-
-a = labelReader.read_lbl(path_name)
-
-
-file_list = glob.glob(path_name_2 + r"/*.hea", recursive=True)
-print(file_list)
