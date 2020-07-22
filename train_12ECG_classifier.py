@@ -95,7 +95,7 @@ def train_12ECG_classifier(input_directory, output_directory):
             lbls=lbls.detach().cpu().numpy()
             
             
-            get_challange_metric_custom()
+            get_challange_metric_custom(res,lbls)
 
             ## save results
             log.append_train([loss_np,challange_metric])
