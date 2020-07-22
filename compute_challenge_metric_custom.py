@@ -37,12 +37,16 @@ def get_confusion(lbls,res):
     
     A=np.zeros((num_classes,num_classes))
     for sig_num in range(num_sigs):
-        for j in range(num_classes):
-            # Assign full and/or partial credit for each positive class.
-            if lbls[sig_num, j]:
-                for k in range(num_classes):
-                    if res[sig_num, k]:
-                        A[j, k] += 1.0/normalizer[sig_num]
+        A=A+lbls[[sig_num], :].T@res[[sig_num], :]*normalizer[sig_num]
+    
+    # A=np.zeros((num_classes,num_classes))
+    # for sig_num in range(num_sigs):
+    #     for j in range(num_classes):
+    #         # Assign full and/or partial credit for each positive class.
+    #         if lbls[sig_num, j]:
+    #             for k in range(num_classes):
+    #                 if res[sig_num, k]:
+    #                     A[j, k] += 1.0/normalizer[sig_num]
     
     
     return A
