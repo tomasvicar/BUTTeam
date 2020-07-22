@@ -6,6 +6,7 @@ from utils import snomed2hot
 from shutil import copyfile
 import numpy as np
 from evaluate_12ECG_score_fixed import evaluate_12ECG_score
+from compute_challenge_metric_custom import compute_challenge_metric_custom
 
 output_directory='../test'
 label_directory='../test_gt'
@@ -20,6 +21,8 @@ except:
 
 labelReader=LabelReader()
 
+lbls_all=[]
+res_all=[]
 
 for k in range(1,10):
 
@@ -41,15 +44,18 @@ for k in range(1,10):
     
     # classes = classes + ['59118001','63593006', '17338001']
 
+    lbls_all.append(labels)
     
     # labels[0]=1
     
-    print(labels.T)
+    res_all.append(labels)
+    
+
+    print(labels)
     
     scores=labels
     
     labels=labels.astype(int)
-    
     
     
     
@@ -60,10 +66,8 @@ for k in range(1,10):
 
 auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric=evaluate_12ECG_score(label_directory, output_directory)
 
-
-
-
 print(challenge_metric)
 
+challenge_metric2=compute_challenge_metric_custom(np.array(res_all),np.array(lbls_all))
 
-
+print(challenge_metric)

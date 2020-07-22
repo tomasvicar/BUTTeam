@@ -1,7 +1,10 @@
-
+from utils import load_weights
 from utils import wce
 import torch
 from read_file import read_table_used
+
+
+
 
 class Config:
     
@@ -52,4 +55,6 @@ class Config:
     
     
     
-    
+    loaded_weigths=load_weights('weights.csv',HASH_TABLE['snomeds'])
+
+
