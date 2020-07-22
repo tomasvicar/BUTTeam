@@ -6,3 +6,5 @@ import numpy as np, os, sys
 def run_12ECG_classifier(data,header_data,loaded_model):
     pass
 
+def load_12ECG_model():
+    pass

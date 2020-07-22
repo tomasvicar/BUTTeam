@@ -24,6 +24,3 @@ def evaluate_12ECG_score_custom(res,lbls,classes):
     
     
     challenge_metric = compute_challenge_metric(weights, labels, binary_outputs, classes, normal_class)
-    
-    
-    challenge_metric = compute_challenge_metric(weights, labels, binary_outputs, classes, normal_class)
