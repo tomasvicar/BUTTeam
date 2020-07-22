@@ -8,6 +8,7 @@ from read_file import read_table_used
 
 class Config:
     
+    MODEL_NOTE='test0'
     
     SPLIT_RATIO=[9,1]
 

@@ -2,20 +2,22 @@
 import os
 import glob
 import numpy as np
-import dataset
 import glob
 import numpy as np
 from torch import optim
 from torch.utils import data
 
 
+
+
 from config import Config
 from log import Log
 
-from dataset import Dataset
-
+# from dataset import Dataset
 
 import net
+
+from get_data_info import enumerate_labels,sub_dataset_labels_sum
 
 
 
@@ -25,14 +27,7 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     device = Config.DEVICE
     
-
-    lbl_counts,num_of_sigs=get_lbls_count(input_directory)
-
-    w_positive=num_of_sigs/lbl_counts
-    w_negative=num_of_sigs/(num_of_sigs-lbl_counts)
     
-    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
-    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
 
    
     file_list = glob.glob(input_directory + r"\**\*.mat", recursive=True)
@@ -46,6 +41,18 @@ def train_12ECG_classifier(input_directory, output_directory):
     valid_ind = permuted_idx[split_ratio_ind:]
     partition = {"train": [file_list[file_idx] for file_idx in train_ind],
         "valid": [file_list[file_idx] for file_idx in valid_ind]}
+    
+    
+    # binary_labels=enumerate_labels(file_list, dict(zip(Config.HASH_TABLE['snomeds'],Config.HASH_TABLE['abb'])))
+    
+    lbl_counts=sub_dataset_labels_sum(partition["train"])    
+    num_of_sigs=len(partition["train"])
+
+    w_positive=num_of_sigs/lbl_counts
+    w_negative=num_of_sigs/(num_of_sigs-lbl_counts)
+    
+    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
+    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
     
     
     # Train dataset generator
@@ -89,16 +96,15 @@ def train_12ECG_classifier(input_directory, output_directory):
             optimizer.step()
 
 
-            loss_np=loss.detach().cpu().numpy()
-            
+            loss=loss.detach().cpu().numpy()
             res=res.detach().cpu().numpy()
             lbls=lbls.detach().cpu().numpy()
+
             
-            
-            get_challange_metric_custom(res,lbls)
+            challange_metric=compute_challenge_metric_custom(res,lbls)
 
             ## save results
-            log.append_train([loss_np,challange_metric])
+            log.append_train([loss,challange_metric])
       
 
 
@@ -113,18 +119,22 @@ def train_12ECG_classifier(input_directory, output_directory):
             
             loss=Config.LOSS_FCN(res,lbls,w_positive_tensor,w_negative_tensor)
 
+            loss=loss.detach().cpu().numpy()
+            res=res.detach().cpu().numpy()
+            lbls=lbls.detach().cpu().numpy()
+
             
-            log.save_tmp_log(lbls,res,loss)
-            
-    
+            challange_metric=compute_challenge_metric_custom(res,lbls)
+
+            ## save results
+            log.append_test([loss,challange_metric])
         
         
-        ## save optimal treshhold to model
-        model.set_t(log.t)   
+        ## save optimal treshhold to model 
                 
         lr=get_lr(optimizer)
         
-        info= str(model_num) + '___' +str(epoch) + '_' + str(lr) + '_train_'  + str(log.trainig_beta_log[-1]) + '_valid_' + str(log.valid_beta_log[-1]) 
+        info= str(epoch) + '_' + str(lr) + '_train_'  + str(log.trainig_log['challange_metric'][-1]) + '_valid_' +str(log.train_log['challange_metric'][-1])) 
         print(info)
         
         model_name=Config.model_save_dir+ os.sep + Config.model_note + info  + '.pkl'
@@ -133,9 +143,7 @@ def train_12ECG_classifier(input_directory, output_directory):
         model.save_config(Config)
         torch.save(model,model_name)
             
-        ## plot loss and beta score
-        if Config.ploting:
-            model.plot_training()
+        log.plot()
         
         scheduler.step()
     

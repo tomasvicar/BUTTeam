@@ -33,7 +33,7 @@ class Log():
         
         
         for name in self.names:
-            self.trainig_log[name].append(np.mean(self.trainig_log_tmp[name]))
+            self.train_log[name].append(np.mean(self.trainig_log_tmp[name]))
             self.test_log[name].append(np.mean(self.test_log_tmp[name]))
         
         
@@ -45,7 +45,7 @@ class Log():
     def plot(self,save_name=None):
         
         for name in self.names:
-            plt.plot( self.trainig_log, label = 'train')
+            plt.plot( self.train_log, label = 'train')
             plt.plot(self.test_log, label = 'test')
             plt.title(name)
             if save_name:
