@@ -5,7 +5,7 @@ from config import Config
 from utils import snomed2hot
 from shutil import copyfile
 import numpy as np
-from evaluate_12ECG_score import evaluate_12ECG_score
+from evaluate_12ECG_score_fixed import evaluate_12ECG_score
 
 output_directory='../test'
 label_directory='../test_gt'
@@ -21,7 +21,7 @@ except:
 labelReader=LabelReader()
 
 
-for k in range(1,9):
+for k in range(1,10):
 
     filename=r"C:\Users\Tom\Desktop\tmp2_cinc2020\data\Training_WFDB\A000"+str(k)+'.hea'
     
@@ -33,12 +33,25 @@ for k in range(1,9):
     
     copyfile(orig_filename,label_directory + os.sep+ filename )
     
-    labels=snomed2hot(snomed,Config.HASH_TABLE['snomeds'])
+    labels=snomed2hot(snomed,Config.HASH_TABLE['snomeds'])[:,0]
+    
+    classes=Config.HASH_TABLE['snomeds']
+    
+    # labels=np.concatenate((labels,labels[4:5],labels[12:13],labels[13:14]))
+    
+    # classes = classes + ['59118001','63593006', '17338001']
+
+    
+    # labels[0]=1
+    
     print(labels.T)
     
     scores=labels
     
-    classes=Config.HASH_TABLE['snomeds']
+    labels=labels.astype(int)
+    
+    
+    
     
     save_challenge_predictions(output_directory,filename.replace('.hea','.mat'),scores,labels,classes)
 
