@@ -23,7 +23,7 @@ labelReader=LabelReader()
 
 lbls_all=[]
 res_all=[]
-
+np.random.seed(42)
 for k in range(1,10):
 
     filename=r"C:\Users\Tom\Desktop\tmp2_cinc2020\data\Training_WFDB\A000"+str(k)+'.hea'
@@ -47,17 +47,18 @@ for k in range(1,10):
     lbls_all.append(labels)
     
     # labels[0]=1
+    labels=(np.random.rand(labels.shape[0])>0.5).astype(np.float)
     
-    res_all.append(labels)
     
-
     print(labels)
     
     scores=labels
     
     labels=labels.astype(int)
     
+    res_all.append(labels)
     
+
     
     save_challenge_predictions(output_directory,filename.replace('.hea','.mat'),scores,labels,classes)
 
@@ -70,4 +71,4 @@ print(challenge_metric)
 
 challenge_metric2=compute_challenge_metric_custom(np.array(res_all),np.array(lbls_all))
 
-print(challenge_metric)
+print(challenge_metric2)

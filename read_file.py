@@ -83,7 +83,7 @@ class LabelReader:
                     parameter = line_sep[2]
                     list_parameters.append(int(parameter.replace('/mV', '')))
                 if line_idx == 13:
-                    list_parameters.append(int(line.replace('#Age: ', '').replace('\n', '')))
+                    list_parameters.append(line.replace('#Age: ', '').replace('\n', ''))
                 if line_idx == 14:
                     list_parameters.append(line.replace('#Sex: ', '').replace('\n', ''))
                 if line_idx == 15:

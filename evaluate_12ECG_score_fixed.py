@@ -514,6 +514,7 @@ def compute_modified_confusion_matrix(labels, outputs):
     for i in range(num_recordings):
         # Calculate the number of positive labels and/or outputs.
         normalization = float(max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1))
+        print(normalization)
         # Iterate over all of the classes.
         for j in range(num_classes):
             # Assign full and/or partial credit for each positive class.
