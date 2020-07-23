@@ -43,10 +43,14 @@ def train_12ECG_classifier(input_directory, output_directory):
         "valid": [file_list[file_idx] for file_idx in valid_ind]}
     
     
+    #### run once
     # binary_labels=enumerate_labels(file_list, dict(zip(Config.HASH_TABLE['snomeds'],Config.HASH_TABLE['abb'])))
     
     lbl_counts=sub_dataset_labels_sum(partition["train"])    
     num_of_sigs=len(partition["train"])
+
+    # w_positive=(num_of_sigs-lbl_counts)/lbl_counts
+    # w_negative=np.ones_like(w_positive)
 
     w_positive=num_of_sigs/lbl_counts
     w_negative=num_of_sigs/(num_of_sigs-lbl_counts)
