@@ -40,11 +40,11 @@ class myConv(nn.Module):
 
         
 class Net_addition_grow(nn.Module):
-    def set_t(self,t):
-        self.t=t
+    def set_ts(self,ts):
+        self.ts=ts
         
-    def get_t(self):
-        return self.t
+    def get_ts(self):
+        return self.ts
     
     
     def __init__(self, levels=7,lvl1_size=4,input_size=12,output_size=9,convs_in_layer=3,init_conv=4,filter_size=13,):

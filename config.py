@@ -10,15 +10,17 @@ class Config:
     
     MODEL_NOTE='test0'
     
+    MODEL_SAVE_DIR='../models_tmp'
+    
     SPLIT_RATIO=[9,1]
 
-    TRAIN_NUM_WORKERS=3
-    VALID_NUM_WORKERS=2
+    TRAIN_NUM_WORKERS=0
+    VALID_NUM_WORKERS=0
     
     BATCH_TRAIN=32
     BATCH_VALID=32
     
-    MAX_EPOCH=107
+    MAX_EPOCH=5
     STEP_SIZE=35
     GAMMA=0.1
     INIT_LR=0.01
@@ -34,6 +36,9 @@ class Config:
     CONVS_IN_LAYERS=2
     INIT_CONV=4
     FILTER_SIZE=13
+    
+    T_OPTIMIZE_INIT=250
+    T_OPTIMIZER_GP=10
     
 
     HASH_TABLE=DataReader.get_label_maps(path="tables/")
