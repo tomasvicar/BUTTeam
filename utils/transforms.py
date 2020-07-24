@@ -146,36 +146,22 @@ class Resample:
         # Rescale data
         self.sample = sample
         self.input_sampling = int(input_sampling)
+        
+        factor=self.output_sampling / self.input_sampling
+        
+        len_old=self.sample.shape[1]
+        num_of_leads=self.sample.shape[0]
+        
+        new_length = int(factor * len_old)
+        resampled_sample = np.zeros((num_of_leads, new_length))
 
-        # Resample data
-        if self.input_sampling < self.output_sampling:
-            self._upsample(self.output_sampling / self.input_sampling)
-        elif self.input_sampling > self.output_sampling:
-            lowest_multiple = np.lcm(self.input_sampling, self.output_sampling)
-            self._downsample(lowest_multiple // self.input_sampling, lowest_multiple // self.output_sampling)
-        else:
-            return self.sample
+        for channel_idx in range(num_of_leads):
+            l1=np.linspace(0,len_old - 1, new_length)
+            l2=np.linspace(0,len_old - 1, len_old)
+            tmp= np.interp(l1,l2,self.sample[channel_idx, :])
+            resampled_sample[channel_idx, :] = tmp
 
-        return self.resampled_sample
-
-    def _upsample(self, up_factor, down_factor=1):
-        new_length = int(up_factor / down_factor * self.sample.shape[1])
-        self.resampled_sample = np.zeros((self.sample.shape[0], new_length))
-
-        for channel_idx in range(self.sample.shape[0]):
-            self.resampled_sample[channel_idx, :] = np.interp(np.linspace(0, self.sample.shape[1] - 1, new_length),
-                                                              np.linspace(0, self.sample.shape[1] - 1, self.sample.shape[1]),
-                                                              self.sample[channel_idx, :])
-
-    def _downsample(self, up_factor, down_factor=1):
-        new_length = int(up_factor / down_factor * self.sample.shape[1])
-        self.resampled_sample = np.zeros((self.sample.shape[0], new_length))
-
-        for channel_idx in range(self.sample.shape[0]):
-            self.resampled_sample[channel_idx, :] = signal.resample_poly(self.sample[channel_idx, :],
-                                                                         up_factor,
-                                                                         down_factor,
-                                                                         )
+        return resampled_sample
 
 
 class BaseLineFilter:
@@ -235,6 +221,41 @@ class OneHotToSnomed(object):
         return [inverse_mapping[idx] for idx, value in enumerate(one_hot_vector) if value > 0]
 
 
+class AddEmgNoise(object):
+    """Returns one hot encoded labels"""
+    def __init__(self, file_name, path="", p=0.5, min_length=500, max_length=2000, magnitude_coeff=10):
+        self.emg_noise = AddEmgNoise._get_file(os.path.join(path, file_name))
+        self.emg_length = len(self.emg_noise)
+        self.probability = p
+        self.min_length = min_length
+        self.max_length = max_length
+        self.magnitude_coeff = magnitude_coeff
+
+    def __call__(self, sample):
+
+        # repeatedly add EMG artifact into ECG record
+        for lead_idx in range(sample.shape[0]):
+            if random.random() > self.probability:
+                continue
+
+            lead_std = np.std(sample[lead_idx])
+            samples_to_distort = int(sample.shape[1] * (random.random() + 1) / 3)
+            distorted_samples = set()
+
+            while len(distorted_samples) < samples_to_distort:
+                noise_length = random.randint(self.min_length, self.max_length)
+                _from = random.randint(0, sample.shape[1] - noise_length)
+                _to = _from + noise_length
+                noise = self.magnitude_coeff * random.random() * lead_std * self.generate_noise(noise_length)
+
+                # Add noise to ecg lead
+                sample[lead_idx, _from:_to] = sample[lead_idx, _from:_to] + noise
+
+                # Update distorted indices
+                distorted_samples.update(list(range(_from, _to)))
+
+        return sample
+
 def main():
     file_path = "E:\\data\\Physionet2020\\Training_StPetersburg\\I0043.mat"
     sample = io.loadmat(os.path.join(file_path))
@@ -245,6 +266,7 @@ def main():
         Resample(output_sampling=500, gain=1),
         BaseLineFilter(window_size=1000),
         RandomAmplifier(p=0.3, max_multiplier=0.2),
+        AddEmgNoise(file_name="emg_raw.txt", path="", p=0.3, min_length=500, max_length=2000, magnitude_coeff=10),
     ])
 
     # One hot vector to Snomed code

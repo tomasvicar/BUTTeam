@@ -9,7 +9,7 @@ from torch.utils import data
 import torch
 
 
-
+from utils.utils import get_lr
 from utils.collate import PaddedCollate
 from config import Config
 from utils.log import Log
@@ -84,7 +84,10 @@ def train_12ECG_classifier(input_directory, output_directory):
         
         #change model to training mode
         model.train()
-        for pad_seqs,lbls,lens in training_generator:
+        N=len(training_generator)
+        for it,(pad_seqs,lbls,lens) in enumerate(training_generator):
+            if it%10==0:
+                print(str(it) + '/' + str(N))
             
             ## send data to graphic card
             pad_seqs,lens,lbls = pad_seqs.to(device),lens.to(device),lbls.to(device)
@@ -118,7 +121,10 @@ def train_12ECG_classifier(input_directory, output_directory):
         res_all=[]
         lbls_all=[]
         model.eval() 
-        for pad_seqs,lbls,lens in validation_generator:
+        N=len(validation_generator)
+        for it,(pad_seqs,lbl,lens) in enumerate(validation_generator):
+            if it%10==0:
+                print(str(it) + '/' + str(N))
 
             pad_seqs,lens,lbls = pad_seqs.to(device),lens.to(device),lbls.to(device)
 
@@ -167,7 +173,7 @@ def train_12ECG_classifier(input_directory, output_directory):
 if __name__ == '__main__':
     # Parse arguments.
     input_directory = '../data'
-    output_directory = '42'
+    output_directory = '../42'
 
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)

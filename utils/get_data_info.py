@@ -72,7 +72,6 @@ def sub_dataset_labels_sum(list_of_paths):
     table_array = np.array(table_list)
     table_sum = np.sum(table_array, axis=0)
 
-    print(table_sum)
     return (table_sum)
 
 

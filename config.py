@@ -12,7 +12,7 @@ class Config:
     
     SPLIT_RATIO=[9,1]
 
-    TRAIN_NUM_WORKERS=4
+    TRAIN_NUM_WORKERS=3
     VALID_NUM_WORKERS=2
     
     BATCH_TRAIN=32

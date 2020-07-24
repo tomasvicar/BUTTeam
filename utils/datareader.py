@@ -26,7 +26,7 @@ class DataReader:
     }
 
     @staticmethod
-    def read_table(path=""):
+    def read_table(path="tables/"):
         """Function reads the table with ALL the diagnosis codes."""
         table = pandas.read_csv(f'{path}Dx_map.csv', usecols=[1, 2])
         table.columns = ["Code", "Label"]
@@ -90,7 +90,7 @@ class DataReader:
         return sampling_frequency, resolution, age, sex, snomed_codes, labels
 
     @staticmethod
-    def get_label_maps(path=""):
+    def get_label_maps(path="tables/"):
         """Function reads the table with ALL the diagnosis codes."""
 
         reader = pandas.read_csv(f'{path}dx_mapping_scored.csv', usecols=[1, 2])
