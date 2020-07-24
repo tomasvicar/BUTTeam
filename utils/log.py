@@ -23,14 +23,13 @@ class Log():
         
         
     def append_train(self,list_to_save):
-        
         for value,name in zip(list_to_save,self.names):
-            self.train_log_tmp[name].append(value)
+            self.train_log_tmp[name]=self.train_log_tmp[name] + [value]
         
         
     def append_test(self,list_to_save):
         for value,name in zip(list_to_save,self.names):
-            self.test_log_tmp[name].append(value)
+            self.test_log_tmp[name]=self.test_log_tmp[name] + [value]
         
         
     def save_and_reset(self):
@@ -47,21 +46,26 @@ class Log():
         
         
     def plot(self,save_name=None):
+        if save_name is not None:
+            save_names=[save_name,None]
+        else:
+            save_names=[None]
         
-        for name in self.names:
-            plt.plot( self.train_log[name], label = 'train')
-            plt.plot(self.test_log[name], label = 'test')
+        for save_name in save_names:
+            for name in self.names:
+                plt.plot( self.train_log[name], label = 'train')
+                plt.plot(self.test_log[name], label = 'test')
+                plt.title(name)
+                if save_name:
+                    plt.savefig(save_name + name + '.png')
+                plt.show()
+                
+            name='opt_metric'
+            plt.plot(self.opt_challange_metric_test, label = 'test')
             plt.title(name)
             if save_name:
-                plt.savefig(save_name + name + '.png')
-            plt.show()
-            
-        name='opt_metric'
-        plt.plot(self.opt_challange_metric_test, label = 'test')
-        plt.title(name)
-        if save_name:
-            plt.savefig(save_name  + name + '.png' )
-        plt.show()  
+                plt.savefig(save_name  + name + '.png' )
+            plt.show()  
             
             
             

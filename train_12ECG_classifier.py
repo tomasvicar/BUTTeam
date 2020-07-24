@@ -36,15 +36,16 @@ def train_12ECG_classifier(input_directory, output_directory):
 
     
     # Train-Test split
-    np.random.seed(666)
+    state=np.random.get_state()
+    np.random.seed(42)
     split_ratio_ind = int(np.floor(Config.SPLIT_RATIO[0] / (Config.SPLIT_RATIO[0] + Config.SPLIT_RATIO[1]) * num_files))
     permuted_idx = np.random.permutation(num_files)
     train_ind = permuted_idx[:split_ratio_ind]
     valid_ind = permuted_idx[split_ratio_ind:]
     partition = {"train": [file_list[file_idx] for file_idx in train_ind],
         "valid": [file_list[file_idx] for file_idx in valid_ind]}
-    
-    
+    np.random.set_state(state)
+
     #### run once
     # binary_labels=enumerate_labels(input_directory, dict(zip(list(Config.HASH_TABLE[0].keys()),list(Config.HASH_TABLE[0].values()))))
     
@@ -184,7 +185,7 @@ def train_12ECG_classifier(input_directory, output_directory):
         scheduler.step()
         
         
-    
+    stop_here=1
     
     
 

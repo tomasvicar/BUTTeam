@@ -68,9 +68,13 @@ class RandomShift:
         self.sample_length = sample.shape[1]
         self.sample_channels = sample.shape[0]
 
-        if random.random() > self.probability:
+        if random.random() < self.probability:
+           
             shift = torch.randint(self.sample_length, (1, 1)).view(-1).numpy()
-            return np.roll(sample, shift, axis=1)
+            
+            sample=np.roll(sample, shift, axis=1)
+            
+        return sample
 
 
 class RandomStretch:
@@ -85,7 +89,7 @@ class RandomStretch:
         self.sample_length = sample.shape[1]
         self.sample_channels = sample.shape[0]
 
-        if random.random() > self.probability:
+        if random.random() < self.probability:
             relative_change = 1 + torch.rand(1).numpy()[0] * 2 * self.max_stretch - self.max_stretch
             new_len = int(relative_change * self.sample_length)
 
@@ -94,7 +98,9 @@ class RandomStretch:
                 stretched_sample[channel_idx, :] = np.interp(np.linspace(0, self.sample_length - 1, new_len),
                                                              np.linspace(0, self.sample_length - 1, self.sample_length),
                                                              sample[channel_idx, :])
-            return stretched_sample
+                
+            sample=stretched_sample
+        return sample
 
 
 class RandomAmplifier:
@@ -109,7 +115,7 @@ class RandomAmplifier:
         self.sample_length = sample.shape[1]
         self.sample_channels = sample.shape[0]
 
-        if random.random() > self.probability:
+        if random.random() < self.probability:
             for channel_idx in range(sample.shape[0]):
                 multiplier = 1 + random.random() * 2 * self.max_multiplier - self.max_multiplier
                 sample[channel_idx, :] = sample[channel_idx, :] * multiplier
@@ -235,7 +241,7 @@ class AddEmgNoise(object):
 
         # repeatedly add EMG artifact into ECG record
         for lead_idx in range(sample.shape[0]):
-            if random.random() > self.probability:
+            if random.random() < self.probability:
                 continue
 
             lead_std = np.std(sample[lead_idx])

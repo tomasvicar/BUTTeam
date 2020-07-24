@@ -20,8 +20,8 @@ class Config:
     BATCH_TRAIN=32
     BATCH_VALID=32
     
-    MAX_EPOCH=5
-    STEP_SIZE=35
+    MAX_EPOCH=22
+    STEP_SIZE=10
     GAMMA=0.1
     INIT_LR=0.01
     
@@ -35,10 +35,10 @@ class Config:
     OUTPUT_SIZE=24
     CONVS_IN_LAYERS=2
     INIT_CONV=4
-    FILTER_SIZE=13
+    FILTER_SIZE=5
     
     T_OPTIMIZE_INIT=250
-    T_OPTIMIZER_GP=10
+    T_OPTIMIZER_GP=50
     
 
     HASH_TABLE=DataReader.get_label_maps(path="tables/")
@@ -49,6 +49,9 @@ class Config:
         transforms.Resample(output_sampling=500, gain=1),
         transforms.BaseLineFilter(window_size=1000),
         transforms.ZScore(mean=0,std=1000),
+        transforms.RandomShift(p=0.8),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
+        transforms.RandomStretch(p=0.8, max_stretch=0.2),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([
