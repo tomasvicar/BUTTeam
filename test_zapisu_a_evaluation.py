@@ -1,12 +1,12 @@
 from driver import save_challenge_predictions
-from datareader import DataReader
+from utils.datareader import DataReader
 import os
 from config import Config
-from utils import snomed2hot
+from utils.utils import snomed2hot
 from shutil import copyfile
 import numpy as np
-from evaluate_12ECG_score_fixed import evaluate_12ECG_score
-from compute_challenge_metric_custom import compute_challenge_metric_custom
+from utils.evaluate_12ECG_score_fixed import evaluate_12ECG_score
+from utils.compute_challenge_metric_custom import compute_challenge_metric_custom
 
 output_directory='../test'
 label_directory='../test_gt'
@@ -28,7 +28,7 @@ for k in range(1,10):
 
     filename=r"C:\Users\Tom\Desktop\tmp2_cinc2020\data\Training_WFDB\A000"+str(k)+'.hea'
     
-    frequency, length,resolution, age, sex,snomed,abbreviations=dataReader.read_header(filename[:-4])
+    sampling_frequency, resolution, age, sex, snomed_codes, labels=dataReader.read_header(filename,Config.SNOMED_TABLE)
     
     orig_filename=filename
     
@@ -37,7 +37,7 @@ for k in range(1,10):
     copyfile(orig_filename,label_directory + os.sep+ filename )
     
     classes=list(Config.HASH_TABLE[0].keys())
-    labels=snomed2hot(snomed,classes)[:,0]
+    labels=snomed2hot(snomed_codes,classes)[:,0]
     
     
     

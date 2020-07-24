@@ -1,8 +1,8 @@
 import glob
 import numpy as np
-from compute_challenge_metric_custom import compute_challenge_metric_custom
-from read_file import read_data,LabelReader
-from utils import snomed2hot
+from utils.compute_challenge_metric_custom import compute_challenge_metric_custom
+from utils.datareader import DataReader
+from utils.utils import snomed2hot
 from config import Config
 from bayes_opt import BayesianOptimization
 
@@ -10,13 +10,12 @@ from bayes_opt import BayesianOptimization
 input_directory= '../data'
 
 
-file_list = glob.glob(input_directory + r"\**\*.mat", recursive=True)
+file_list = glob.glob(input_directory + r"\**\*.hea", recursive=True)
 num_files = len(file_list)
 
 
 
-labelReader=LabelReader()
-
+dataReader=DataReader()
 lbls_all=[]
 res_all=[]
 
@@ -25,8 +24,10 @@ for file_num,filename in enumerate(file_list[::10]):
 
     print(file_num)
     
-    frequency, length,resolution, age, sex,snomed,abbreviations=labelReader.read_lbl(filename[:-4])
-    labels=snomed2hot(snomed,Config.HASH_TABLE['snomeds'])[:,0]
+    sampling_frequency, resolution, age, sex, snomed_codes, labels=dataReader.read_header(filename,Config.SNOMED_TABLE)
+
+    classes=list(Config.HASH_TABLE[0].keys())
+    labels=snomed2hot(snomed_codes,classes)[:,0]
     
     lbls_all.append(labels)
     

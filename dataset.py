@@ -1,6 +1,6 @@
 from torch.utils import data
-from read_file import DataReader
-import transforms
+from utils.datareader import DataReader
+import utils.transforms
 import numpy as np
 import glob
 
@@ -14,8 +14,8 @@ class Dataset(data.Dataset):
 
     def __init__(self, file_names, transform=None, encode=False):
         """Initialization"""
-        self.snomed_table = DataReader.read_table(path="")
-        self.idx_mapping, self.label_mapping = DataReader.get_label_maps(path="")
+        self.snomed_table = DataReader.read_table(path="tables/")
+        self.idx_mapping, self.label_mapping = DataReader.get_label_maps(path="tables/")
         self.file_names_list = file_names
         self.transform = transform
         self.encode = encode

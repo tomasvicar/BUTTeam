@@ -6,21 +6,20 @@ import glob
 import numpy as np
 from torch import optim
 from torch.utils import data
+import torch
 
 
 
-
+from utils.collate import PaddedCollate
 from config import Config
-from log import Log
+from utils.log import Log
+from utils.compute_challenge_metric_custom import compute_challenge_metric_custom
 
-# from dataset import Dataset
+from dataset import Dataset
 
 import net
 
-from get_data_info import enumerate_labels,sub_dataset_labels_sum
-
-
-
+from utils.get_data_info import enumerate_labels,sub_dataset_labels_sum
 
 
 def train_12ECG_classifier(input_directory, output_directory):
@@ -29,7 +28,11 @@ def train_12ECG_classifier(input_directory, output_directory):
     
 
     file_list = glob.glob(input_directory + r"\**\*.mat", recursive=True)
+    file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
+    
+    
     num_files = len(file_list)
+
     
     # Train-Test split
     np.random.seed(666)
@@ -42,7 +45,7 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     
     #### run once
-    # binary_labels=enumerate_labels(file_list, dict(zip(Config.HASH_TABLE['snomeds'],Config.HASH_TABLE['abb'])))
+    # binary_labels=enumerate_labels(input_directory, dict(zip(list(Config.HASH_TABLE[0].keys()),list(Config.HASH_TABLE[0].values()))))
     
     lbl_counts=sub_dataset_labels_sum(partition["train"])    
     num_of_sigs=len(partition["train"])
@@ -59,11 +62,11 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     # Train dataset generator
     training_set = Dataset( partition["train"],transform=Config.TRANSFORM_DATA_TRAIN,encode=Config.TRANSFORM_LBL)
-    training_generator = data.DataLoader(training_set,batch_size=Config.BATCH_TRAIN,num_workers=Config.TRAIN_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn )
+    training_generator = data.DataLoader(training_set,batch_size=Config.BATCH_TRAIN,num_workers=Config.TRAIN_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=PaddedCollate() )
     
     
     validation_set = Dataset(partition["valid"],transform=Config.TRANSFORM_DATA_VALID,encode=Config.TRANSFORM_LBL)
-    validation_generator = data.DataLoader(validation_set,batch_size=Config.BATCH_VALID,num_workers=Config.VALID_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=Dataset.collate_fn )
+    validation_generator = data.DataLoader(validation_set,batch_size=Config.BATCH_VALID,num_workers=Config.VALID_NUM_WORKERS,shuffle=True,drop_last=True,collate_fn=PaddedCollate() )
     
     
     model = net.Net_addition_grow(levels=Config.LEVELS,lvl1_size=Config.LVL1_SIZE,input_size=Config.INPUT_SIZE,output_size=Config.OUTPUT_SIZE,convs_in_layer=Config.CONVS_IN_LAYERS,init_conv=Config.INIT_CONV,filter_size=Config.FILTER_SIZE)
@@ -77,11 +80,11 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     log=Log(['loss','challange_metric'])
     
-    for epoch in range(Config.max_epochs):
+    for epoch in range(Config.MAX_EPOCH):
         
         #change model to training mode
         model.train()
-        for pad_seqs,lens,lbls in training_generator:
+        for pad_seqs,lbls,lens in training_generator:
             
             ## send data to graphic card
             pad_seqs,lens,lbls = pad_seqs.to(device),lens.to(device),lbls.to(device)
@@ -115,7 +118,7 @@ def train_12ECG_classifier(input_directory, output_directory):
         res_all=[]
         lbls_all=[]
         model.eval() 
-        for pad_seqs,lens,lbls in validation_generator:
+        for pad_seqs,lbls,lens in validation_generator:
 
             pad_seqs,lens,lbls = pad_seqs.to(device),lens.to(device),lbls.to(device)
 
@@ -142,7 +145,7 @@ def train_12ECG_classifier(input_directory, output_directory):
                 
         lr=get_lr(optimizer)
         
-        info= str(epoch) + '_' + str(lr) + '_train_'  + str(log.trainig_log['challange_metric'][-1]) + '_valid_' +str(log.train_log['challange_metric'][-1])) 
+        info= str(epoch) + '_' + str(lr) + '_train_'  + str(log.trainig_log['challange_metric'][-1]) + '_valid_' + str(log.train_log['challange_metric'][-1])
         print(info)
         
         model_name=Config.model_save_dir+ os.sep + Config.model_note + info  + '.pkl'
