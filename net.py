@@ -180,29 +180,3 @@ class Net_addition_grow(nn.Module):
         self.config=config
         
         
-    
-    def plot_training(self):
-        
-        plt.plot(self.log.trainig_loss_log,'b')
-        plt.plot(self.log.valid_loss_log,'r')
-        plt.title('loss')
-        plt.show()
-        
-        
-        plt.plot(self.log.trainig_beta_log,'b')
-        plt.plot(self.log.valid_beta_log,'g')
-        plt.title('geometric mean')
-        plt.show()
-    
-    def save_plot_training(self,name):
-        
-        plt.plot(self.log.trainig_loss_log,'b')
-        plt.plot(self.log.valid_loss_log,'r')
-        plt.title('loss')
-        plt.savefig(name + '_loss.png')
-        
-        
-        plt.plot(self.log.trainig_beta_log,'b')
-        plt.plot(self.log.valid_beta_log,'g')
-        plt.title('geometric mean')
-        plt.savefig(name + '_geometric_mean.png')

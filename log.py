@@ -51,3 +51,8 @@ class Log():
             if save_name:
                 plt.savefig(save_name)
             plt.show()
+            
+            
+    def save_log_model_name(self,model_name):
+        ## store model names
+        self.model_names.append(model_name)

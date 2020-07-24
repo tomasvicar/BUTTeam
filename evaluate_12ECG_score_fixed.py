@@ -138,27 +138,47 @@ def load_labels(label_files, normal_class, equivalent_classes_collection):
 
     # For each set of equivalent class, use only one class as the representative class for the set and discard the other classes in the set.
     # The label for the representative class is positive if any of the labels in the set is positive.
+    # remove_classes = list()
+    # remove_indices = list()
+    # for equivalent_classes in equivalent_classes_collection:
+
+    #     values1=0
+    #     if equivalent_classes[1] in classes:
+    #         i=classes.index(equivalent_classes[1])
+    #         values1=labels[:, i]
+            
+    #         if equivalent_classes[0] in classes:
+    #             i=classes.index(equivalent_classes[0])
+    #             values2=labels[:, i]
+    #             labels[:, i]=values1|values2
+    #             remove_classes.append()
+    #             remove_indices += other_indices
+    #         else:
+                
+
+    for equivalent_classes in equivalent_classes_collection:
+        for equivalent_class in equivalent_classes:
+            if not equivalent_class in classes:
+                classes.append(equivalent_class)
+                labels=np.concatenate((labels,np.zeros((labels.shape[0],1),dtype=np.bool)),axis=1)
+        
+        
+
+
     remove_classes = list()
     remove_indices = list()
     for equivalent_classes in equivalent_classes_collection:
-        for eq in equivalent_classes[1:]:
-            if eq in classes:
-                other_indices = [classes.index(eq)]
-                remove_classes += [eq]
-                remove_indices += other_indices
-        
-        
-        # equivalent_classes = [x for x in equivalent_classes if x in classes]
-        # if len(equivalent_classes)>1:
-        #     representative_class = equivalent_classes[0]
-        #     other_classes = equivalent_classes[1:]
-        #     equivalent_indices = [classes.index(x) for x in equivalent_classes]
-        #     representative_index = equivalent_indices[0]
-        #     other_indices = equivalent_indices[1:]
+        equivalent_classes = [x for x in equivalent_classes if x in classes]
+        if len(equivalent_classes)>1:
+            representative_class = equivalent_classes[0]
+            other_classes = equivalent_classes[1:]
+            equivalent_indices = [classes.index(x) for x in equivalent_classes]
+            representative_index = equivalent_indices[0]
+            other_indices = equivalent_indices[1:]
 
-        #     labels[:, representative_index] = np.any(labels[:, equivalent_indices], axis=1)
-        #     remove_classes += other_classes
-        #     remove_indices += other_indices
+            labels[:, representative_index] = np.any(labels[:, equivalent_indices], axis=1)
+            remove_classes += other_classes
+            remove_indices += other_indices
 
     for x in remove_classes:
         classes.remove(x)
@@ -220,14 +240,39 @@ def load_outputs(output_files, normal_class, equivalent_classes_collection):
     # For each set of equivalent class, use only one class as the representative class for the set and discard the other classes in the set.
     # The binary output for the representative class is positive if any of the classes in the set is positive.
     # The scalar output is the mean of the scalar outputs for the classes in the set.
+    # remove_classes = list()
+    # remove_indices = list()
+    # for equivalent_classes in equivalent_classes_collection:
+    #     binary_outputs[:, classes.index(equivalent_classes[0])]=binary_outputs[:, classes.index(equivalent_classes[0])]| binary_outputs[:, classes.index(equivalent_classes[1])]
+        
+    #     remove_classes.append(equivalent_classes[1])
+    #     remove_indices.append(classes.index(equivalent_classes[1]))
+        
+    for equivalent_classes in equivalent_classes_collection:
+        for equivalent_class in equivalent_classes:
+            if not equivalent_class in classes:
+                classes.append(equivalent_class)
+                binary_outputs=np.concatenate((binary_outputs,np.zeros((binary_outputs.shape[0],1),dtype=np.bool)),axis=1)
+                scalar_outputs=np.concatenate((scalar_outputs,np.zeros((scalar_outputs.shape[0],1),dtype=np.bool)),axis=1)
+
+
     remove_classes = list()
     remove_indices = list()
     for equivalent_classes in equivalent_classes_collection:
-        for eq in equivalent_classes[1:]:
-            if eq in classes:
-                other_indices = [classes.index(eq)]
-                remove_classes += [eq]
-                remove_indices += other_indices
+        equivalent_classes = [x for x in equivalent_classes if x in classes]
+        if len(equivalent_classes)>1:
+            representative_class = equivalent_classes[0]
+            other_classes = equivalent_classes[1:]
+            equivalent_indices = [classes.index(x) for x in equivalent_classes]
+            representative_index = equivalent_indices[0]
+            other_indices = equivalent_indices[1:]
+
+            binary_outputs[:, representative_index] = np.any( binary_outputs[:, equivalent_indices], axis=1)
+            scalar_outputs[:, representative_index] = np.any( scalar_outputs[:, equivalent_indices], axis=1)
+            remove_classes += other_classes
+            remove_indices += other_indices
+
+
 
     for x in remove_classes:
         classes.remove(x)
@@ -514,7 +559,6 @@ def compute_modified_confusion_matrix(labels, outputs):
     for i in range(num_recordings):
         # Calculate the number of positive labels and/or outputs.
         normalization = float(max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1))
-        print(normalization)
         # Iterate over all of the classes.
         for j in range(num_classes):
             # Assign full and/or partial credit for each positive class.

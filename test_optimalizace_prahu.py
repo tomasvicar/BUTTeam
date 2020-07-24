@@ -20,7 +20,8 @@ labelReader=LabelReader()
 lbls_all=[]
 res_all=[]
 
-for file_num,filename in enumerate(file_list[0:20]):
+
+for file_num,filename in enumerate(file_list[::10]):
 
     print(file_num)
     
@@ -43,16 +44,49 @@ challenge_metric_05=compute_challenge_metric_custom(res_all>0.5,lbls_all)
 print(challenge_metric_05)
 
 
-# param_names=['min_dist','min_value','min_h','min_size']
-# bounds_lw=[1,   0,      0,      20]
-# bounds_up=[80,  0.9,    0.9,    400]
+
+def aply_ts(res_all,ts):
+    res_binar=np.zeros(res_all.shape,dtype=np.bool)
+    for class_num,t in enumerate(ts.values()):
+        res_binar[:,class_num]=res_all[:,class_num]>t
+        
+    return res_binar
+    
+
+def evaluate_ts(normalize=False,**ts):
+    
+    res_binar=aply_ts(res_all,ts)
+        
+    challenge_metric=compute_challenge_metric_custom(res_binar,lbls_all,normalize=normalize)
+    
+    return challenge_metric
 
 
 
 
 
-# pbounds=dict(zip(segmenter.param_names, zip(segmenter.bounds_lw,segmenter.bounds_up)))
 
-# optimizer = BayesianOptimization(f=func,pbounds=pbounds,random_state=1)  
+func = evaluate_ts  
+
+param_names=['t' + str(k) for k in range(lbls_all.shape[1])]
+bounds_lw=0*np.ones(lbls_all.shape[1])
+bounds_up=1*np.ones(lbls_all.shape[1])
+
+
+pbounds=dict(zip(param_names, zip(bounds_lw,bounds_up)))
+
+optimizer = BayesianOptimization(f=func,pbounds=pbounds,random_state=1)  
   
-#   optimizer.maximize(init_points=50,n_iter=150)
+optimizer.maximize(init_points=250,n_iter=50)
+
+
+ts=optimizer.max['params']
+
+
+res_binar=aply_ts(res_all,ts)
+        
+challenge_metric=compute_challenge_metric_custom(res_binar,lbls_all,normalize=True)
+
+print(challenge_metric)
+
+

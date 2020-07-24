@@ -27,9 +27,7 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     device = Config.DEVICE
     
-    
 
-   
     file_list = glob.glob(input_directory + r"\**\*.mat", recursive=True)
     num_files = len(file_list)
     
@@ -114,6 +112,8 @@ def train_12ECG_classifier(input_directory, output_directory):
 
 
         ## validation mode - "disable" batch norm 
+        res_all=[]
+        lbls_all=[]
         model.eval() 
         for pad_seqs,lens,lbls in validation_generator:
 
@@ -132,6 +132,10 @@ def train_12ECG_classifier(input_directory, output_directory):
 
             ## save results
             log.append_test([loss,challange_metric])
+            
+            
+            lbls_all.append(lbls)
+            res_all.append(res)
         
         
         ## save optimal treshhold to model 
@@ -150,14 +154,8 @@ def train_12ECG_classifier(input_directory, output_directory):
         log.plot()
         
         scheduler.step()
-    
-    
-    
-    
-    
-    
-    
-    
+        
+        
     
     
     

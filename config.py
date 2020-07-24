@@ -1,7 +1,7 @@
 from utils import load_weights
 from utils import wce
 import torch
-from read_file import read_table_used
+from datareader import DataReader
 
 
 
@@ -36,7 +36,8 @@ class Config:
     FILTER_SIZE=13
     
 
-    HASH_TABLE=read_table_used()
+    HASH_TABLE=DataReader.get_label_maps()
+    SNOMED_TABLE = DataReader.read_table(path="")
     
     
     # TRANSFORM_DATA_TRAIN=transforms.Compose([
@@ -56,6 +57,6 @@ class Config:
     
     
     
-    loaded_weigths=load_weights('weights.csv',HASH_TABLE['snomeds'])
+    loaded_weigths=load_weights('weights.csv',list(HASH_TABLE[0].keys()))
 
 

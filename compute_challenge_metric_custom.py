@@ -3,11 +3,16 @@ from config import Config
 
 
 
-def compute_challenge_metric_custom(res,lbls):
+def compute_challenge_metric_custom(res,lbls,normalize=True):
     
     
     normal_class = '426783006'
-    normal_index=Config.HASH_TABLE['snomeds'].index(normal_class)
+    
+    clases=Config.HASH_TABLE['snomeds']
+    
+
+    normal_index=clases.index(normal_class)
+
 
     lbls=lbls>0
     res=res>0
@@ -15,6 +20,9 @@ def compute_challenge_metric_custom(res,lbls):
     weights = Config.loaded_weigths
     
     observed_score=np.sum(weights*get_confusion(lbls,res))
+    
+    if normalize == False:
+        return observed_score
     
     correct_score=np.sum(weights*get_confusion(lbls,lbls))
     
@@ -41,17 +49,17 @@ def get_confusion(lbls,res):
     for sig_num in range(num_sigs):
         A=A+lbls[[sig_num], :].T@res[[sig_num], :]/normalizer[sig_num]
     
-    B=np.zeros((num_classes,num_classes))
-    for sig_num in range(num_sigs):
-        for j in range(num_classes):
-            # Assign full and/or partial credit for each positive class.
-            if lbls[sig_num, j]:
-                for k in range(num_classes):
-                    if res[sig_num, k]:
-                        B[j, k] += 1.0/normalizer[sig_num]
+    # B=np.zeros((num_classes,num_classes))
+    # for sig_num in range(num_sigs):
+    #     for j in range(num_classes):
+    #         # Assign full and/or partial credit for each positive class.
+    #         if lbls[sig_num, j]:
+    #             for k in range(num_classes):
+    #                 if res[sig_num, k]:
+    #                     B[j, k] += 1.0/normalizer[sig_num]
     
-    if np.sum(A!=B)>0:
-        fsfdsf=fsdfsdf
+    # if np.sum(A!=B)>0:
+    #     fsfdsf=fsdfsdf
     
     return A
         

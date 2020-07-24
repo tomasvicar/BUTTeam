@@ -1,5 +1,5 @@
 from driver import save_challenge_predictions
-from read_file import read_data,LabelReader
+from datareader import DataReader
 import os
 from config import Config
 from utils import snomed2hot
@@ -19,7 +19,7 @@ try:
 except:
     pass
 
-labelReader=LabelReader()
+dataReader=DataReader()
 
 lbls_all=[]
 res_all=[]
@@ -28,7 +28,7 @@ for k in range(1,10):
 
     filename=r"C:\Users\Tom\Desktop\tmp2_cinc2020\data\Training_WFDB\A000"+str(k)+'.hea'
     
-    frequency, length,resolution, age, sex,snomed,abbreviations=labelReader.read_lbl(filename[:-4])
+    frequency, length,resolution, age, sex,snomed,abbreviations=dataReader.read_header(filename[:-4])
     
     orig_filename=filename
     
@@ -36,9 +36,10 @@ for k in range(1,10):
     
     copyfile(orig_filename,label_directory + os.sep+ filename )
     
-    labels=snomed2hot(snomed,Config.HASH_TABLE['snomeds'])[:,0]
+    classes=list(Config.HASH_TABLE[0].keys())
+    labels=snomed2hot(snomed,classes)[:,0]
     
-    classes=Config.HASH_TABLE['snomeds']
+    
     
     # labels=np.concatenate((labels,labels[4:5],labels[12:13],labels[13:14]))
     
