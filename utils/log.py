@@ -60,6 +60,7 @@ class Log():
                 if save_name:
                     plt.savefig(save_name + name + '.png')
                 plt.show()
+                plt.close()
                 
             name='opt_metric'
             plt.plot(self.opt_challange_metric_test, label = 'test')
@@ -67,6 +68,7 @@ class Log():
             if save_name:
                 plt.savefig(save_name  + name + '.png' )
             plt.show()  
+            plt.close()
             
             
             
