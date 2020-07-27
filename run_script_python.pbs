@@ -1,6 +1,6 @@
 #PBS -N cinc_train
 #PBS -S /bin/bash
-#PBS -l ncpus=12
+#PBS -l ncpus=20
 #PBS -l ngpus=1
 #PBS -l mem=32gb
 #PBS -l walltime=100:00:00
