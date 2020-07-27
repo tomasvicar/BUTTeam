@@ -19,10 +19,10 @@ class Config:
     TRAIN_NUM_WORKERS=4
     VALID_NUM_WORKERS=4
     
-    BATCH_TRAIN=32
+    BATCH_TRAIN=64
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
-    MAX_EPOCH=103
+    MAX_EPOCH=71
     STEP_SIZE=33
     GAMMA=0.1
     INIT_LR=0.01
@@ -32,13 +32,13 @@ class Config:
     # LOSS_FCN=wce
     LOSS_FCN=challange_metric_loss
     
-    LEVELS=8
-    LVL1_SIZE=6
+    LEVELS=7
+    LVL1_SIZE=4
     INPUT_SIZE=12
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=3
-    INIT_CONV=6
-    FILTER_SIZE=5
+    CONVS_IN_LAYERS=2
+    INIT_CONV=4
+    FILTER_SIZE=3
     
     T_OPTIMIZE_INIT=250
     T_OPTIMIZER_GP=50
