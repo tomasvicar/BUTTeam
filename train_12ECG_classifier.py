@@ -30,12 +30,12 @@ def train_12ECG_classifier(input_directory, output_directory):
     
     device = Config.DEVICE
     
-
-    file_list = glob.glob(input_directory + r"\**\*.mat", recursive=True)
+    file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
     file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
     
     
     num_files = len(file_list)
+    print(num_files)
 
     
     # Train-Test split
@@ -130,10 +130,7 @@ def train_12ECG_classifier(input_directory, output_directory):
             ## save results
             log.append_train([loss,challange_metric])
             
-            if it>10:
-                break
-
-
+           
 
         model.save_lens(np.concatenate(lens_all,axis=0))
         ## validation mode - "disable" batch norm 
@@ -164,9 +161,6 @@ def train_12ECG_classifier(input_directory, output_directory):
             
             lbls_all.append(lbls)
             res_all.append(res)
-        
-            if it>10:
-                break
         
         
         

@@ -16,14 +16,14 @@ class Config:
     
     SPLIT_RATIO=[9,1]
 
-    TRAIN_NUM_WORKERS=0
-    VALID_NUM_WORKERS=0
+    TRAIN_NUM_WORKERS=4
+    VALID_NUM_WORKERS=4
     
     BATCH_TRAIN=32
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
-    MAX_EPOCH=2
-    STEP_SIZE=10
+    MAX_EPOCH=103
+    STEP_SIZE=33
     GAMMA=0.1
     INIT_LR=0.01
     
@@ -32,15 +32,15 @@ class Config:
     LOSS_FCN=wce
     
     LEVELS=8
-    LVL1_SIZE=4
+    LVL1_SIZE=6
     INPUT_SIZE=12
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=2
-    INIT_CONV=4
+    CONVS_IN_LAYERS=3
+    INIT_CONV=6
     FILTER_SIZE=5
     
     T_OPTIMIZE_INIT=250
-    T_OPTIMIZER_GP=1
+    T_OPTIMIZER_GP=50
     
 
     HASH_TABLE=DataReader.get_label_maps(path="tables/")
