@@ -19,7 +19,7 @@ class Config:
     TRAIN_NUM_WORKERS=4
     VALID_NUM_WORKERS=4
     
-    BATCH_TRAIN=64
+    BATCH_TRAIN=128
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
     MAX_EPOCH=71
@@ -32,16 +32,16 @@ class Config:
     # LOSS_FCN=wce
     LOSS_FCN=challange_metric_loss
     
-    LEVELS=7
+    LEVELS=6
     LVL1_SIZE=4
     INPUT_SIZE=12
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=2
+    CONVS_IN_LAYERS=3
     INIT_CONV=4
     FILTER_SIZE=3
     
-    T_OPTIMIZE_INIT=250
-    T_OPTIMIZER_GP=50
+    T_OPTIMIZE_INIT=270
+    T_OPTIMIZER_GP=30
     
 
     HASH_TABLE=DataReader.get_label_maps(path="tables/")
@@ -49,9 +49,10 @@ class Config:
     SNOMED_24_ORDERD_LIST=list(HASH_TABLE[0].keys())
     
     
+    output_sampling=125
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
-        transforms.Resample(output_sampling=500, gain=1),
+        transforms.Resample(output_sampling=output_sampling, gain=1),
         transforms.BaseLineFilter(window_size=1000),
         transforms.ZScore(mean=0,std=1000),
         transforms.RandomShift(p=0.8),
@@ -60,7 +61,7 @@ class Config:
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([
-        transforms.Resample(output_sampling=500, gain=1),
+        transforms.Resample(output_sampling=output_sampling, gain=1),
         transforms.BaseLineFilter(window_size=1000),
         transforms.ZScore(mean=0,std=1000),
         ])

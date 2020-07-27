@@ -3,6 +3,7 @@ import os
 import numpy as np
 import scipy.io as io
 from scipy import signal
+from scipy.signal import firwin,filtfilt
 import torch
 from utils.datareader import DataReader
 
@@ -196,13 +197,26 @@ class Resample:
         len_old=self.sample.shape[1]
         num_of_leads=self.sample.shape[0]
         
+
         new_length = int(factor * len_old)
         resampled_sample = np.zeros((num_of_leads, new_length))
 
         for channel_idx in range(num_of_leads):
+            tmp=self.sample[channel_idx, :]
+            
+            ### antialias
+            if factor<1:
+                q=1/factor
+                
+                half_len = 10 * q  
+                n = 2 * half_len
+                b, a = firwin(int(n)+1, 1./q, window='hamming'), 1.
+                tmp = filtfilt(b, a, tmp)
+            
+            
             l1=np.linspace(0,len_old - 1, new_length)
             l2=np.linspace(0,len_old - 1, len_old)
-            tmp= np.interp(l1,l2,self.sample[channel_idx, :])
+            tmp= np.interp(l1,l2,tmp)
             resampled_sample[channel_idx, :] = tmp
 
         return resampled_sample
