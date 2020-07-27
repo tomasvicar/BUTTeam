@@ -6,8 +6,8 @@ from scipy import signal
 import torch
 from utils.datareader import DataReader
 
-__all__ = ["Compose", "HardClip", "ZScore", "RandomShift", "RandomStretch", "RandomAmplifier", "RandomVerticalFlip",
-           "Resample", "OneHot",
+__all__ = ["Compose", "HardClip", "ZScore", "RandomShift", "RandomStretch", "RandomAmplifier", "RandomLeadSwitch",
+           "Resample", "BaseLineFilter", "OneHot", "SnomedToOneHot", "OneHotToSnomed", "AddEmgNoise"
            ]
 
 
@@ -123,21 +123,59 @@ class RandomAmplifier:
         return sample
 
 
-class RandomVerticalFlip(object):
-    """Flip polarity of the given signal"""
+class RandomLeadSwitch(object):
+    """Simulates reversal of ecg leads"""
     """Should be only I and aVL"""
-    def __init__(self, p=0):
+
+    def __init__(self, p=0.05):
         self.probability = p
+        self.reversal_type = ["LA_LR", "LA_LL", "RA_LL", "PRECORDIAL"]
+        self.weights = [3, 1, 1, 2]
+        self.precordial_pairs = [("V1", "V2"), ("V2", "V3"), ("V3", "V4"), ("V4", "V5"), ("V5", "V6")]
+        self.lead_map = dict(zip(
+            ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"],
+            range(0, 12))
+        )
 
     def __call__(self, sample, **kwargs):
         """
         :param sample (numpy array): multidimensional array
         :return: sample (numpy array)
         """
-        for row in range(sample.shape[0]-1):
-            if random.random() < self.p:
-                sample[row, :] *= -1
-        return sample
+        self.sample = sample
+
+        if random.random() < self.probability:
+            selected_type = random.choices(self.reversal_type, weights=self.weights, k=1)[0]
+            if selected_type == "LA_LR":
+                self.invert_channel("I")
+                self.switch_channel(["II", "III"])
+                self.switch_channel(["aVL", "aVR"])
+                return self.sample
+
+            if selected_type == "LA_LL":
+                self.invert_channel("III")
+                self.switch_channel(["I", "II"])
+                self.switch_channel(["aVL", "aVF"])
+                return self.sample
+
+            if selected_type == "RA_LL":
+                self.invert_channel("I")
+                self.invert_channel("II")
+                self.invert_channel("III")
+                self.switch_channel(["I", "III"])
+                self.switch_channel(["aVR", "aVF"])
+                return self.sample
+
+            if selected_type == "PRECORDIAL":
+                self.switch_channel(random.choices(self.precordial_pairs, k=1)[0])
+                return self.sample
+
+    def invert_channel(self, channel_name):
+        self.sample[self.lead_map[channel_name], :] *= -1
+
+    def switch_channel(self, channel_names):
+        self.sample[[self.lead_map[channel_names[0]], self.lead_map[channel_names[1]]], :] = \
+            self.sample[[self.lead_map[channel_names[1]], self.lead_map[channel_names[0]]], :]
 
 
 class Resample:
@@ -272,6 +310,7 @@ def main():
         Resample(output_sampling=500, gain=1),
         BaseLineFilter(window_size=1000),
         RandomAmplifier(p=0.3, max_multiplier=0.2),
+        RandomLeadSwitch(p=0.05),
         AddEmgNoise(file_name="emg_raw.txt", path="", p=0.3, min_length=500, max_length=2000, magnitude_coeff=10),
     ])
 
