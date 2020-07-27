@@ -29,8 +29,8 @@ class Config:
     
     DEVICE=torch.device("cuda:0")
     
-    # LOSS_FCN=wce
-    LOSS_FCN=challange_metric_loss
+    LOSS_FCN=wce
+    # LOSS_FCN=challange_metric_loss
     
     LEVELS=6
     LVL1_SIZE=4
