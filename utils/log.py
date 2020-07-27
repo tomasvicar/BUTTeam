@@ -36,8 +36,9 @@ class Log():
         
         
         for name in self.names:
-            self.train_log[name].append(np.mean(self.train_log_tmp[name]))
-            self.test_log[name].append(np.mean(self.test_log_tmp[name]))
+            self.train_log[name]= self.train_log[name] + [np.mean(self.train_log_tmp[name])]
+            self.test_log[name]= self.test_log[name] + [np.mean(self.test_log_tmp[name])]
+        
         
         
         self.train_log_tmp=dict(zip(self.names, [[]]*len(self.names)))
@@ -72,3 +73,7 @@ class Log():
     def save_log_model_name(self,model_name):
         ## store model names
         self.model_names.append(model_name)
+        
+        
+        
+    

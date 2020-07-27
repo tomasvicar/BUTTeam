@@ -8,6 +8,8 @@ from utils import transforms
 
 class Config:
     
+    DATA_DIR='../data'
+    
     MODEL_NOTE='test0'
     
     MODEL_SAVE_DIR='../models_tmp'
@@ -18,9 +20,9 @@ class Config:
     VALID_NUM_WORKERS=0
     
     BATCH_TRAIN=32
-    BATCH_VALID=32
+    BATCH_VALID=BATCH_TRAIN ## sould be same
     
-    MAX_EPOCH=22
+    MAX_EPOCH=2
     STEP_SIZE=10
     GAMMA=0.1
     INIT_LR=0.01
@@ -38,7 +40,7 @@ class Config:
     FILTER_SIZE=5
     
     T_OPTIMIZE_INIT=250
-    T_OPTIMIZER_GP=50
+    T_OPTIMIZER_GP=1
     
 
     HASH_TABLE=DataReader.get_label_maps(path="tables/")

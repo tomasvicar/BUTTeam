@@ -41,7 +41,7 @@ class DataReader:
             return None
 
     @staticmethod
-    def read_header(file_name, snomed_table):
+    def read_header(file_name, snomed_table,from_file=True):
         """Function saves information about the patient from header file in this order:
         sampling frequency, length of the signal, voltage resolution, age, sex, list of diagnostic labels both in
         SNOMED and abbreviations (sepate lists)"""
@@ -61,8 +61,32 @@ class DataReader:
                 return value
 
         # Read line 15 in header file and parse string with labels
-        with open(file_name, "r") as file:
-            for line_idx, line in enumerate(file):
+        if from_file:
+            with open(file_name, "r") as file:
+                for line_idx, line in enumerate(file):
+                    if line_idx == 0:
+                        sampling_frequency = float(line.split(" ")[2])
+                        continue
+                    if line_idx == 1:
+                        resolution = string_to_float(line.split(" ")[2].replace("/mV", ""))
+                        continue
+                    if line_idx == 13:
+                        age = string_to_float(line.strip("#Age: ").rstrip("\n"))
+                        continue
+                    if line_idx == 14:
+                        sex = line.strip("#Sex: ").rstrip("\n").lower()
+                        if sex not in DataReader.sex_mapping:
+                            sex = None
+                        else:
+                            sex = DataReader.sex_mapping[sex]
+                        continue
+                    if line_idx == 15:
+                        snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
+                        snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
+                        break
+        ### if header is already in list (for evaluatation code)
+        else:
+            for line_idx, line in enumerate(file_name):
                 if line_idx == 0:
                     sampling_frequency = float(line.split(" ")[2])
                     continue

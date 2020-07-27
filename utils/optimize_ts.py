@@ -6,8 +6,10 @@ from config import Config
 
 def aply_ts(res_all,ts):
     res_binar=np.zeros(res_all.shape,dtype=np.bool)
-    for class_num,t in enumerate(ts.values()):
-        res_binar[:,class_num]=res_all[:,class_num]>t
+    
+    for class_num in range(len(ts)):
+        
+        res_binar[:,class_num]=res_all[:,class_num]>ts['t' + str(class_num)]
         
     return res_binar
 

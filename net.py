@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 from torch.nn import init
 import matplotlib.pyplot as plt
+import os
 
 
 
@@ -56,7 +57,6 @@ class Net_addition_grow(nn.Module):
         self.convs_in_layer=convs_in_layer
         self.filter_size=filter_size
         
-        self.t=0.5*np.ones(output_size)
         
         
         self.init_conv=myConv(input_size,init_conv,filter_size=filter_size)
@@ -178,5 +178,26 @@ class Net_addition_grow(nn.Module):
         
     def save_config(self,config):  
         self.config=config
+        
+    def save_lens(self,lens):
+        self.lens=lens
+        
+    def save_train_names(self,train_names):
+        
+        tmp=[]
+        for name in train_names['train']:
+            path,filename = os.path.split(name)
+            tmp.append(filename)
+        train_names['train']=tmp
+        
+        tmp=[]
+        for name in train_names['valid']:
+            path,filename = os.path.split(name)
+            tmp.append(filename)
+        train_names['valid']=tmp
+        
+        self.train_names=train_names
+        
+        
         
         
