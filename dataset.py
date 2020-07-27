@@ -1,6 +1,6 @@
 from torch.utils import data
 from utils.datareader import DataReader
-from  utils import transforms
+from utils import transforms
 
 import numpy as np
 import glob

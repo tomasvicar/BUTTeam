@@ -56,8 +56,8 @@ def load_12ECG_model(input_directory):
     f_out='model.pt'
     filename = os.path.join(input_directory,f_out)
     
-    # device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
-    device = torch.device("cuda:0")
+    device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda:0")
     
     
     loaded_model = torch.load(filename,map_location=device)
