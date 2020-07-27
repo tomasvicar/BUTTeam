@@ -37,7 +37,6 @@ def train_12ECG_classifier(input_directory, output_directory):
     num_files = len(file_list)
     print(num_files)
 
-    
     # Train-Test split
     state=np.random.get_state()
     np.random.seed(42)
@@ -125,7 +124,7 @@ def train_12ECG_classifier(input_directory, output_directory):
 
             lens_all.append(lens)
             
-            challange_metric=compute_challenge_metric_custom(res>0,lbls)
+            challange_metric=compute_challenge_metric_custom(res>0.5,lbls)
 
             ## save results
             log.append_train([loss,challange_metric])
@@ -153,7 +152,7 @@ def train_12ECG_classifier(input_directory, output_directory):
             lbls=lbls.detach().cpu().numpy()
 
             
-            challange_metric=compute_challenge_metric_custom(res>0,lbls)
+            challange_metric=compute_challenge_metric_custom(res>0.5,lbls)
 
             ## save results
             log.append_test([loss,challange_metric])

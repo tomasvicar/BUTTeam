@@ -1,5 +1,5 @@
 from utils.utils import load_weights
-from utils.utils import wce
+from utils.losses import wce,challange_metric_loss
 import torch
 from utils.datareader import DataReader
 from utils import transforms
@@ -29,7 +29,8 @@ class Config:
     
     DEVICE=torch.device("cuda:0")
     
-    LOSS_FCN=wce
+    # LOSS_FCN=wce
+    LOSS_FCN=challange_metric_loss
     
     LEVELS=8
     LVL1_SIZE=6
@@ -45,6 +46,8 @@ class Config:
 
     HASH_TABLE=DataReader.get_label_maps(path="tables/")
     SNOMED_TABLE = DataReader.read_table(path="tables/")
+    SNOMED_24_ORDERD_LIST=list(HASH_TABLE[0].keys())
+    
     
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
@@ -66,6 +69,6 @@ class Config:
     
     
     
-    loaded_weigths=load_weights('weights.csv',list(HASH_TABLE[0].keys()))
+    loaded_weigths=load_weights('weights.csv',SNOMED_24_ORDERD_LIST)
 
 

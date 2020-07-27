@@ -45,7 +45,7 @@ def run_12ECG_classifier(data,header_data,model):
     
     score=score[0,:]
     label=label[0,:].astype(int)
-    classes=list(Config.HASH_TABLE[0].keys())
+    classes=Config.SNOMED_24_ORDERD_LIST
     
     
     return label, score , classes

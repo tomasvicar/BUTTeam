@@ -7,11 +7,8 @@ def compute_challenge_metric_custom(res,lbls,normalize=True):
     
     
     normal_class = '426783006'
-    
-    clases=list(Config.HASH_TABLE[0].keys())
-    
 
-    normal_index=clases.index(normal_class)
+    normal_index=Config.HASH_TABLE[0][normal_class]
 
 
     lbls=lbls>0
