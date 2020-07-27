@@ -48,7 +48,8 @@ if not os.path.isdir(input_directory):
 
 
 file_list = glob.glob(Config.DATA_DIR + r"\**\*.mat", recursive=True)
-file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
+file_list_holters =[x for x in file_list if 'Training_StPetersburg' in x]
+# file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
 
 num_files = len(file_list)
 
@@ -63,7 +64,7 @@ partition = {"train": [file_list[file_idx] for file_idx in train_ind],
     "valid": [file_list[file_idx] for file_idx in valid_ind]}
 np.random.set_state(state)
 
-for file_num,file in enumerate(partition['valid']):
+for file_num,file in enumerate(file_list_holters):
     path,file_name=os.path.split(file)
     
     copyfile(file,input_directory + os.sep + file_name)

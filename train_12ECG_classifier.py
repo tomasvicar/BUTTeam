@@ -22,7 +22,8 @@ from utils.get_data_info import enumerate_labels,sub_dataset_labels_sum
 
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
 from driver import load_challenge_data,save_challenge_predictions
-from evaluate_12ECG_score import evaluate_12ECG_score
+# from evaluate_12ECG_score import evaluate_12ECG_score
+from evaluate_12ECG_score_fixed import evaluate_12ECG_score
 
 
 def train_12ECG_classifier(input_directory, output_directory):
@@ -257,7 +258,7 @@ if __name__ == '__main__':
         "valid": [file_list[file_idx] for file_idx in valid_ind]}
     np.random.set_state(state)
     
-    for file_num,file in enumerate(file_list):
+    for file_num,file in enumerate(partition['valid']):
         path,file_name=os.path.split(file)
         
         copyfile(file,input_directory + os.sep + file_name)
