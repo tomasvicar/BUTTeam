@@ -60,8 +60,8 @@ class FocalLoss():
             pos_loss = -(q ** gamma) * torch.log(p)*w_positive_tensor
             neg_loss = -(p ** gamma) * torch.log(q)*w_negative_tensor
         else:
-            pos_loss = -(q ** gamma) * torch.log(p)*w_positive_tensor
-            neg_loss = -(p ** gamma) * torch.log(q)*w_negative_tensor
+            pos_loss = -(q ** gamma) * torch.log(p)
+            neg_loss = -(p ** gamma) * torch.log(q)
     
         loss = lbls * pos_loss + (1 - lbls) * neg_loss
         return torch.mean(loss)
