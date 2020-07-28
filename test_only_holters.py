@@ -47,7 +47,7 @@ if not os.path.isdir(input_directory):
     os.mkdir(input_directory)
 
 
-file_list = glob.glob(Config.DATA_DIR + r"\**\*.mat", recursive=True)
+file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
 file_list_holters =[x for x in file_list if 'Training_StPetersburg' in x]
 # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
 

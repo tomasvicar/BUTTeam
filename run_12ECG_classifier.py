@@ -60,6 +60,8 @@ def run_12ECG_classifier(data,header_data,model):
 
 def load_12ECG_model(input_directory):
 
+    input_directory='model'
+
     f_out='model.pt'
     filename = os.path.join(input_directory,f_out)
 

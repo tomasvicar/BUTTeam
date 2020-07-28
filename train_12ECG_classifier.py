@@ -235,7 +235,7 @@ if __name__ == '__main__':
         os.mkdir(input_directory)
     
     
-    file_list = glob.glob(Config.DATA_DIR + r"\**\*.mat", recursive=True)
+    file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
     file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
     
     num_files = len(file_list)
