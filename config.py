@@ -1,5 +1,5 @@
 from utils.utils import load_weights
-from utils.losses import wce,challange_metric_loss
+from utils.losses import wce,challange_metric_loss,FocalLoss
 import torch
 from utils.datareader import DataReader
 from utils import transforms
@@ -29,8 +29,9 @@ class Config:
     
     DEVICE=torch.device("cuda:0")
     
-    LOSS_FCN=wce
+    # LOSS_FCN=wce
     # LOSS_FCN=challange_metric_loss
+    LOSS_FCN=FocalLoss(gamma=2,weighted=False)
     
     LEVELS=6
     LVL1_SIZE=4

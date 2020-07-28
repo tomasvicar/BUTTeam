@@ -39,3 +39,33 @@ def challange_metric_loss(res,lbls,w_positive_tensor,w_negative_tensor):
         A=A + tmp
     
     return -torch.sum(A*weights)
+
+
+
+class FocalLoss():
+    def __init__(self, gamma = 2.0,weighted=False):
+        self.gamma=gamma
+        self.weighted=weighted
+    
+
+    def __call__(self,res,lbls,w_positive_tensor,w_negative_tensor):
+        
+        gamma=self.gamma
+        
+        p = torch.clamp(res,min=1e-6,max=1-1e-6)
+    
+        q=1-p
+        
+        if self.weighted:
+            pos_loss = -(q ** gamma) * torch.log(p)*w_positive_tensor
+            neg_loss = -(p ** gamma) * torch.log(q)*w_negative_tensor
+        else:
+            pos_loss = -(q ** gamma) * torch.log(p)*w_positive_tensor
+            neg_loss = -(p ** gamma) * torch.log(q)*w_negative_tensor
+    
+        loss = lbls * pos_loss + (1 - lbls) * neg_loss
+        return torch.mean(loss)
+
+
+
+

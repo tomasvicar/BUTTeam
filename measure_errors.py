@@ -158,11 +158,11 @@ with open(output_file, 'w') as f:
     
     
     
-output_file='notes/prediction_all_order_lbls_pred.csv'
+output_file='notes/prediction_all_order_spatne_lbls_pred.csv'
 with open(output_file, 'w') as f:
     for k in range(lbls_all.shape[0]):
         
-        f.write(input_files[k] +','+ ','.join(str(i) for i in lbls_all[k,:].astype(np.int)) + 'xxxxxx' +  ','.join(str(i) for i in res_all[k,:])  +  '\n' )
+        f.write(input_files[k] +',' +','.join(str(i) for i in (lbls_all[k,:].astype(np.int)!=res_all[k,:]).astype(np.int)) + ',xxxxxx, ' + ','.join(str(i) for i in lbls_all[k,:].astype(np.int)) + ',xxxxxx,' +  ','.join(str(i) for i in res_all[k,:])  +  '\n' )
     
 
 import matplotlib.pyplot as plt
