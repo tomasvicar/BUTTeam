@@ -175,7 +175,7 @@ def train_12ECG_classifier(input_directory, output_directory):
         print(info)
         
         model_name=Config.MODEL_SAVE_DIR+ os.sep + Config.MODEL_NOTE + info  
-        log.save_log_model_name(model_name + '.pkl')
+        log.save_log_model_name(model_name + '.pt')
         model.save_log(log)
         model.save_config(Config)
         torch.save(model,model_name + '.pt')
