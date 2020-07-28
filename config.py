@@ -52,13 +52,15 @@ class Config:
     
     output_sampling=125
     
+    
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling, gain=1),
-        transforms.BaseLineFilter(window_size=1000),
+        transforms.BaseLineFilter(window_size=1000/(500/output_sampling)),
         transforms.ZScore(mean=0,std=1000),
         transforms.RandomShift(p=0.8),
-        transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
-        transforms.RandomStretch(p=0.8, max_stretch=0.2),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.8),
+        transforms.RandomStretch(p=0.8, max_stretch=0.4),
+        transforms.RandomLeadSwitch(p=0.05),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([

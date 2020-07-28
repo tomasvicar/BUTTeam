@@ -119,6 +119,11 @@ class RandomAmplifier:
         if random.random() < self.probability:
             for channel_idx in range(sample.shape[0]):
                 multiplier = 1 + random.random() * 2 * self.max_multiplier - self.max_multiplier
+                
+                ##mutliply by 2 is same as equvalent to multiply by 0.5 not 0!
+                if multiplier<1:
+                    multiplier=1/(1-multiplier+1)
+                    
                 sample[channel_idx, :] = sample[channel_idx, :] * multiplier
 
         return sample
