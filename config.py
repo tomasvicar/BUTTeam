@@ -3,7 +3,7 @@ from utils.losses import wce,challange_metric_loss,FocalLoss
 import torch
 from utils.datareader import DataReader
 from utils import transforms
-
+import numpy as np
 
 
 class Config:
@@ -22,17 +22,20 @@ class Config:
     BATCH_TRAIN=128
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
-    MAX_EPOCH=71
-    STEP_SIZE=33
-    GAMMA=0.1
-    INIT_LR=0.01
+
+    LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
+    LR_CHANGES_LIST=[30,20,10,15,10,5]
+    LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
+    MAX_EPOCH=np.sum(LR_CHANGES_LIST)
     
-    DEVICE=torch.device("cuda:0")
-    
-    LOSS_FCN=wce
+    # LOSS_FCN=wce
     # LOSS_FCN=challange_metric_loss
     # LOSS_FCN=FocalLoss(gamma=2,weighted=False)
     
+    
+    DEVICE=torch.device("cuda:0")
+    
+
     LEVELS=6
     LVL1_SIZE=4
     INPUT_SIZE=12
