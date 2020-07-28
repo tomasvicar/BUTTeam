@@ -42,6 +42,7 @@ def run_12ECG_classifier(data,header_data,model):
     score=score.detach().cpu().numpy()
     
     label = aply_ts(score,model.get_ts())
+    # label = score>0.5
     
     score=score[0,:]
     label=label[0,:].astype(int)
