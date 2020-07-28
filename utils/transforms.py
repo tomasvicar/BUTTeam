@@ -92,6 +92,10 @@ class RandomStretch:
 
         if random.random() < self.probability:
             relative_change = 1 + torch.rand(1).numpy()[0] * 2 * self.max_stretch - self.max_stretch
+            if relative_change<1:
+                relative_change=1/(1-relative_change+1)
+            
+            
             new_len = int(relative_change * self.sample_length)
 
             stretched_sample = np.zeros((self.sample_channels, new_len))
@@ -175,6 +179,8 @@ class RandomLeadSwitch(object):
             if selected_type == "PRECORDIAL":
                 self.switch_channel(random.choices(self.precordial_pairs, k=1)[0])
                 return self.sample
+        else:
+            return self.sample
 
     def invert_channel(self, channel_name):
         self.sample[self.lead_map[channel_name], :] *= -1
