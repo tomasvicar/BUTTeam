@@ -4,38 +4,16 @@ from bayes_opt import BayesianOptimization
 from config import Config
 
 
-def aply_ts(scores, ts):
-    """
-    Applies thresholding to output scores and merge results if sample is divided into batch
-    :param scores: model output scores, shape=(batch, 1, num_of_classes)
-    :param ts: custom thresholds, shape=(1, num_of_classes)??
-    :return: aggregated one hot encoded labels
-    """
 
-    def merge_labels(labels):
-        """
-        Merges labels across single batch
-        :param labels: one hot encoded labels, shape=(batch, 1, num_of_classes)
-        :return: aggregated one hot encoded labels, shape=(1, 1, num_of_classes)
-        """
-        return np.amax(labels, axis=0)
+def aply_ts(res_all,ts):
 
-    binary_results = np.zeros(scores.shape, dtype=np.bool)
-    for class_idx in range(len(ts)):
-        binary_results[:, 0, class_idx] = scores[:, 0, class_idx] > ts("t"+str(class_idx))
+    res_binar=np.zeros(res_all.shape,dtype=np.bool)
 
-    return merge_labels(binary_results)
+    for class_num in range(len(ts)):
 
+        res_binar[:,class_num]=res_all[:,class_num]>ts['t' + str(class_num)]
 
-# def aply_ts(res_all,ts):
-#
-#     res_binar=np.zeros(res_all.shape,dtype=np.bool)
-#
-#     for class_num in range(len(ts)):
-#
-#         res_binar[:,class_num]=res_all[:,class_num]>ts['t' + str(class_num)]
-#
-#     return res_binar
+    return res_binar
 
 
 def optimize_ts(res_all,lbls_all):

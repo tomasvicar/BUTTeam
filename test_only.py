@@ -63,7 +63,8 @@ partition = {"train": [file_list[file_idx] for file_idx in train_ind],
     "valid": [file_list[file_idx] for file_idx in valid_ind]}
 np.random.set_state(state)
 
-for file_num,file in enumerate(partition['valid']):
+tmp=partition['valid']
+for file_num,file in enumerate(tmp):
     path,file_name=os.path.split(file)
     
     copyfile(file,input_directory + os.sep + file_name)

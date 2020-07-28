@@ -14,23 +14,25 @@ def run_12ECG_classifier(data,header_data,model):
 
     transform=Config.TRANSFORM_DATA_VALID
     if transform:
-        data0 = transform(data, input_sampling=sampling_frequency)
+        data = transform(data, input_sampling=sampling_frequency)
 
-    lens = data.shape[1]
+    
 
 
     lens_all=model.lens
-    batch=Config.BATCH_VALID
+    batch=model.config.BATCH_VALID
 
     # Get random sample length within whole data set
     lens_sample = np.random.choice(lens_all, batch, replace=False)
     random_batch_length = np.max(lens_sample)
 
     # Generate batch if sample is too long, batch with random zero-padding otherwise
-    reshaped_data = generate_batch(data, random_batch_length)
+    reshaped_data,lens = generate_batch(data, random_batch_length,model.config.output_sampling)
+    print(reshaped_data.shape)
     data = torch.from_numpy(reshaped_data.copy())
 
-    lens = torch.from_numpy(np.array(lens).astype(np.float32)).view(1)
+    
+    lens = torch.from_numpy(np.array(lens).astype(np.float32))
 
     cuda_check = next(model.parameters()).is_cuda
     if cuda_check:
@@ -45,9 +47,11 @@ def run_12ECG_classifier(data,header_data,model):
 
     label = aply_ts(score,model.get_ts())
     # label = score>0.5
+    
+    label =merge_labels(label)
+    score =merge_labels(score)
 
-    score=score[0,:]
-    label=label[0,:].astype(int)
+    label=label.astype(int)
     classes=Config.SNOMED_24_ORDERD_LIST
 
 
@@ -71,16 +75,18 @@ def load_12ECG_model(input_directory):
     return loaded_model
 
 
-def generate_batch(sample, random_batch_length):
+def generate_batch(sample, random_batch_length,sampling_freq):
 
-    sampling_freq = Config.output_sampling
+    lens=[]
 
     # Compute number of chunks
-    max_chunk_length = int(sampling_freq * 90)
-    overlap = int(sampling_freq * 5)
-    num_of_chunks = (sample.shape[1] - overlap) // (max_chunk_length - overlap)
+    if sample.shape[1]>int(sampling_freq * 105):
+    
+        max_chunk_length = int(sampling_freq * 90)
+        overlap = int(sampling_freq * 5)
+        num_of_chunks = (sample.shape[1] - overlap) // (max_chunk_length - overlap)
 
-    if num_of_chunks != 0:
+    
         # Generate split indices
         onsets_list = [idx * (max_chunk_length - overlap) for idx in range(num_of_chunks)]
         offsets_list = [max_chunk_length + idx * (max_chunk_length - overlap) for idx in range(num_of_chunks)]
@@ -94,6 +100,7 @@ def generate_batch(sample, random_batch_length):
         for idx, onset, offset in zip(range(num_of_chunks), onsets_list, offsets_list):
             chunk = sample[:, onset:offset]
             batch[idx, :, :chunk.shape[1]] = chunk
+            lens.append(chunk.shape[1])
 
     else:
         max_length = max(random_batch_length, sample.shape[1])
@@ -102,8 +109,16 @@ def generate_batch(sample, random_batch_length):
         batch = np.zeros([1, 12, max_length])
         # Generate batch
         batch[0, :, :sample.shape[1]] = sample
+        
+        lens.append(sample.shape[1])
 
-    return batch.astype(np.float32)
+    return batch.astype(np.float32),lens
 
 
-
+def merge_labels(labels):
+    """
+    Merges labels across single batch
+    :param labels: one hot encoded labels, shape=(batch, 1, num_of_classes)
+    :return: aggregated one hot encoded labels, shape=(1, 1, num_of_classes)
+    """
+    return np.max(labels, axis=0)
