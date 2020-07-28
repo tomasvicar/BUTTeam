@@ -133,10 +133,7 @@ def train_12ECG_classifier(input_directory, output_directory):
 
             ## save results
             log.append_train([loss,challange_metric])
-            
-            if it>2:
-                break
-           
+                       
 
         model.save_lens(np.concatenate(lens_all,axis=0))
         ## validation mode - "disable" batch norm 
@@ -167,10 +164,7 @@ def train_12ECG_classifier(input_directory, output_directory):
             
             lbls_all.append(lbls)
             res_all.append(res)
-        
-            if it>2:
-                break
-        
+                
         ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0)) 
         model.set_ts(ts)
         log.save_opt_challange_metric_test(opt_challenge_metric)

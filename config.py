@@ -37,12 +37,12 @@ class Config:
     
 
     LEVELS=6
-    LVL1_SIZE=4
+    LVL1_SIZE=8
     INPUT_SIZE=12
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=3
-    INIT_CONV=4
-    FILTER_SIZE=3
+    CONVS_IN_LAYERS=6
+    INIT_CONV=8
+    FILTER_SIZE=7
     
     T_OPTIMIZE_INIT=270
     T_OPTIMIZER_GP=30
@@ -61,9 +61,8 @@ class Config:
         transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=1000),
         transforms.RandomShift(p=0.8),
-        transforms.RandomAmplifier(p=0.8,max_multiplier=0.8),
-        transforms.RandomStretch(p=0.8, max_stretch=0.4),
-        transforms.RandomLeadSwitch(p=0.05),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.4),
+        transforms.RandomStretch(p=0.8, max_stretch=0.3),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([
