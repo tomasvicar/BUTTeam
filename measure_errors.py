@@ -132,4 +132,69 @@ auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_met
 
 print(challenge_metric)
 
+lbls_all=np.array(lbls_all)
+res_all=np.array(res_all)
+
+from config import Config
+
+TP=np.sum((lbls_all==1)&(res_all==1),axis=0)
+FP=np.sum((lbls_all==0)&(res_all==1),axis=0)
+FN=np.sum((lbls_all==1)&(res_all==0),axis=0)
+TN=np.sum((lbls_all==0)&(res_all==0),axis=0)
+
+classes=Config.SNOMED_24_ORDERD_LIST
+
+
+class_string = ','.join(classes)
+TP_string = ','.join(str(i) for i in TP)
+FP_string = ','.join(str(i) for i in FP)
+FN_string = ','.join(str(i) for i in FN)
+TN_string = ','.join(str(i) for i in TN)
+
+
+output_file='notes/prediction_errors.csv'
+with open(output_file, 'w') as f:
+    f.write(class_string +'\n' + TP_string + '\n'+'FP_string' +'\n'+FN_string +'\n'+TN_string +'\n' )
+    
+    
+    
+output_file='notes/prediction_all_order_lbls_pred.csv'
+with open(output_file, 'w') as f:
+    for k in range(lbls_all.shape[0]):
+        
+        f.write(input_files[k] +','+ ','.join(str(i) for i in lbls_all[k,:].astype(np.int)) + 'xxxxxx' +  ','.join(str(i) for i in res_all[k,:])  +  '\n' )
+    
+
+import matplotlib.pyplot as plt
+
+width = 0.65
+ind=np.arange(24)
+p1 = plt.bar(ind, TP, width)
+p2 = plt.bar(ind, FP, width,bottom=TP)
+p3 = plt.bar(ind, FN, width,bottom=TP+FP)
+p4 = plt.bar(ind, TN, width,bottom=TP+FP+FN)
+
+
+plt.xticks(ind, classes)
+plt.xticks(rotation=-45)
+plt.legend((p1[0], p2[0],p3[0],p4[0]), ('TP', 'FP','FN','TN'))
+plt.savefig('notes/prediction_errors_snomed.png',dpi=200)
+plt.close()
+
+
+width = 0.65
+ind=np.arange(24)
+p1 = plt.bar(ind, TP, width)
+p2 = plt.bar(ind, FP, width,bottom=TP)
+p3 = plt.bar(ind, FN, width,bottom=TP+FP)
+p4 = plt.bar(ind, TN, width,bottom=TP+FP+FN)
+
+
+plt.xticks(ind, [Config.HASH_TABLE[1][x] for x in classes])
+plt.xticks(rotation=-45)
+plt.legend((p1[0], p2[0],p3[0],p4[0]), ('TP', 'FP','FN','TN'))
+plt.savefig('notes/prediction_errors_abb.png',dpi=200)
+plt.close()
+
+
 
