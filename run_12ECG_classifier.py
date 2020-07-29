@@ -46,15 +46,16 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
     for model_num,model in enumerate(models):
         score = model(data,lens)
         score=score.detach().cpu().numpy()
+        label = aply_ts(score,model.get_ts()).astype(np.float32)
     
         if traning_to_nan:
             partition=model.train_names
             
             if not file_name in partition['valid']:
                 score[:]=np.nan
+                label[:]=np.nan
     
-    
-        label = aply_ts(score,model.get_ts())
+        
         # label = score>0.5
         
         label =merge_labels(label)
@@ -65,8 +66,8 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
         all_label.append(label)
         
     
-    score=np.nanmean(np.array(all_score),1)
-    label=np.nanmean(np.array(all_label),1)
+    score=np.nanmean(np.array(all_score),0)
+    label=np.nanmean(np.array(all_label),0)
         
         
     label=label.astype(int)    

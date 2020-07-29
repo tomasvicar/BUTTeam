@@ -8,6 +8,7 @@ from torch import optim
 from torch.utils import data as dataa
 import torch
 from shutil import copyfile,rmtree
+from datetime import datetime
 
 
 from utils.utils import get_lr
@@ -181,7 +182,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         
         lr=get_lr(optimizer)
         
-        info= str(epoch) + '_' + str(lr) + '_train_'  + str(log.train_log['challange_metric'][-1]) + '_valid_' + str(log.test_log['challange_metric'][-1]) + '_validopt_' + str(log.opt_challange_metric_test[-1])
+        info='model' + str(model_num) + '_'  + str(epoch) + '_' + str(lr) + '_train_'  + str(log.train_log['challange_metric'][-1]) + '_valid_' + str(log.test_log['challange_metric'][-1]) + '_validopt_' + str(log.opt_challange_metric_test[-1])
         print(info)
         
         model_name=Config.MODEL_SAVE_DIR+ os.sep + Config.MODEL_NOTE + info  
@@ -246,7 +247,7 @@ if __name__ == '__main__':
     
     
     file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
-    file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
+    # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
     
     num_files = len(file_list)
    
@@ -298,4 +299,6 @@ if __name__ == '__main__':
     
     print(challenge_metric)
     
-    
+    output_file='notes/result' + datetime.now().strftime("%H_%M_%d_%m_%Y") + '.txt'
+    with open(output_file, 'w') as f:
+        f.write(str(challenge_metric))

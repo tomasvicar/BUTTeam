@@ -16,43 +16,34 @@ class Config:
     
     SPLIT_RATIO=[9,1]
 
-    TRAIN_NUM_WORKERS=4
-    VALID_NUM_WORKERS=4
+    TRAIN_NUM_WORKERS=8
+    VALID_NUM_WORKERS=8
     
     BATCH_TRAIN=128
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
     
-    # MODELS_SEEDS=[42,666,69,13,142857]
+    MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
 
-    # LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
-    # LR_CHANGES_LIST=[30,20,10,15,10,5]
-    # LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
+    LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
+    LR_CHANGES_LIST=[30,20,10,15,10,5]
+    LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
     
-    MODELS_SEEDS=[42,666]
 
-    LR_LIST=[0.01]
-    LR_CHANGES_LIST=[5]
-    LOSS_FUNTIONS=[wce]
-    
-    
     
     MAX_EPOCH=np.sum(LR_CHANGES_LIST)
-    
-    # LOSS_FCN=wce
-    # LOSS_FCN=challange_metric_loss
-    # LOSS_FCN=FocalLoss(gamma=2,weighted=False)
+
     
     
     DEVICE=torch.device("cuda:0")
     
 
     LEVELS=6
-    LVL1_SIZE=8
+    LVL1_SIZE=6
     INPUT_SIZE=12
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=6
-    INIT_CONV=8
+    CONVS_IN_LAYERS=5
+    INIT_CONV=6
     FILTER_SIZE=7
     
     T_OPTIMIZE_INIT=270

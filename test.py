@@ -8,6 +8,7 @@ from torch import optim
 from torch.utils import data as dataa
 import torch
 from shutil import copyfile,rmtree
+from datetime import datetime
 
 
 from utils.utils import get_lr
@@ -22,8 +23,11 @@ from utils.get_data_info import enumerate_labels,sub_dataset_labels_sum
 
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
 from driver import load_challenge_data,save_challenge_predictions
+
+
 # from evaluate_12ECG_score import evaluate_12ECG_score
-from evaluate_12ECG_score_fixed import evaluate_12ECG_score
+# from evaluate_12ECG_score_fixed import evaluate_12ECG_score
+from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
 
 
 
@@ -48,12 +52,12 @@ if not os.path.isdir(input_directory):
 
 
 file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
-file_list_holters =[x for x in file_list if 'Training_StPetersburg' in x]
 # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
 
 
+num_files = len(file_list)
 
-for file_num,file in enumerate(file_list_holters):
+for file_num,file in enumerate(file_list):
     path,file_name=os.path.split(file)
     
     copyfile(file,input_directory + os.sep + file_name)
@@ -92,7 +96,7 @@ for i, f in enumerate(input_files):
     print('    {}/{}...'.format(i+1, num_files))
     tmp_input_file = os.path.join(input_directory,f)
     data,header_data = load_challenge_data(tmp_input_file)
-    current_label, current_score,classes = run_12ECG_classifier(data,header_data, model)
+    current_label, current_score,classes = run_12ECG_classifier(data,header_data, model,traning_to_nan=True,file_name=f)
     # Save results.
     save_challenge_predictions(output_directory,f,current_score,current_label,classes)
 
@@ -103,3 +107,9 @@ print('evaluating')
 auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric=evaluate_12ECG_score(input_directory, output_directory)
 
 print(challenge_metric)
+
+output_file='notes/result' + datetime.now().strftime("%H_%M_%d_%m_%Y") + '.txt'
+with open(output_file, 'w') as f:
+    f.write(str(challenge_metric))
+
+
