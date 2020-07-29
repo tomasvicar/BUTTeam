@@ -51,18 +51,7 @@ file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
 file_list_holters =[x for x in file_list if 'Training_StPetersburg' in x]
 # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
 
-num_files = len(file_list)
 
-# Train-Test split
-state=np.random.get_state()
-np.random.seed(42)
-split_ratio_ind = int(np.floor(Config.SPLIT_RATIO[0] / (Config.SPLIT_RATIO[0] + Config.SPLIT_RATIO[1]) * num_files))
-permuted_idx = np.random.permutation(num_files)
-train_ind = permuted_idx[:split_ratio_ind]
-valid_ind = permuted_idx[split_ratio_ind:]
-partition = {"train": [file_list[file_idx] for file_idx in train_ind],
-    "valid": [file_list[file_idx] for file_idx in valid_ind]}
-np.random.set_state(state)
 
 for file_num,file in enumerate(file_list_holters):
     path,file_name=os.path.split(file)

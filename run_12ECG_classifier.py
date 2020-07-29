@@ -6,7 +6,7 @@ from config import Config
 from utils.optimize_ts import aply_ts
 
 
-def run_12ECG_classifier(data,header_data,model):
+def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=None):
 
     snomed_table = DataReader.read_table(path="tables/")
     header = DataReader.read_header(header_data, snomed_table,from_file=False)
@@ -19,39 +19,57 @@ def run_12ECG_classifier(data,header_data,model):
     
 
 
-    lens_all=model.lens
-    batch=model.config.BATCH_VALID
+    lens_all=models[0].lens
+    batch=models[0].config.BATCH_VALID
 
     # Get random sample length within whole data set
     lens_sample = np.random.choice(lens_all, batch, replace=False)
     random_batch_length = np.max(lens_sample)
 
     # Generate batch if sample is too long, batch with random zero-padding otherwise
-    reshaped_data,lens = generate_batch(data, random_batch_length,model.config.output_sampling)
+    reshaped_data,lens = generate_batch(data, random_batch_length,models[0].config.output_sampling)
     print(reshaped_data.shape)
     data = torch.from_numpy(reshaped_data.copy())
 
     
     lens = torch.from_numpy(np.array(lens).astype(np.float32))
 
-    cuda_check = next(model.parameters()).is_cuda
+    cuda_check = next(models[0].parameters()).is_cuda
     if cuda_check:
-        cuda_device = next(model.parameters()).get_device()
+        cuda_device = next(models[0].parameters()).get_device()
         device = torch.device('cuda:' + str(cuda_device) )
         lens=lens.to(device)
         data=data.to(device)
 
-
-    score = model(data,lens)
-    score=score.detach().cpu().numpy()
-
-    label = aply_ts(score,model.get_ts())
-    # label = score>0.5
+    all_score=[]
+    all_label =[]
+    for model_num,model in enumerate(models):
+        score = model(data,lens)
+        score=score.detach().cpu().numpy()
     
-    label =merge_labels(label)
-    score =merge_labels(score)
-
-    label=label.astype(int)
+        if traning_to_nan:
+            partition=model.train_names
+            
+            if not file_name in partition['valid']:
+                score[:]=np.nan
+    
+    
+        label = aply_ts(score,model.get_ts())
+        # label = score>0.5
+        
+        label =merge_labels(label)
+        score =merge_labels(score)
+    
+        
+        all_score.append(score)
+        all_label.append(label)
+        
+    
+    score=np.nanmean(np.array(all_score),1)
+    label=np.nanmean(np.array(all_label),1)
+        
+        
+    label=label.astype(int)    
     classes=Config.SNOMED_24_ORDERD_LIST
 
 
@@ -59,22 +77,35 @@ def run_12ECG_classifier(data,header_data,model):
 
 
 def load_12ECG_model(input_directory):
-
+    
     input_directory='model'
-
-    f_out='model.pt'
-    filename = os.path.join(input_directory,f_out)
-
+    
     device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
-    # device = torch.device("cuda:0")
 
 
+    f_out='model1.pt'
+    filename = os.path.join(input_directory,f_out)
     loaded_model = torch.load(filename,map_location=device)
 
-    loaded_model=loaded_model.eval().to(device)
 
+    models=[]
+    for model_num in range(len(loaded_model.config.MODELS_SEEDS)):
+        
 
-    return loaded_model
+        f_out='model'+ str(model_num) +'.pt'
+        filename = os.path.join(input_directory,f_out)
+    
+
+        # device = torch.device("cuda:0")
+    
+    
+        loaded_model = torch.load(filename,map_location=device)
+    
+        loaded_model=loaded_model.eval().to(device)
+
+        models.append(loaded_model)
+
+    return models
 
 
 def generate_batch(sample, random_batch_length,sampling_freq):

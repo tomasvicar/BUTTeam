@@ -16,17 +16,27 @@ class Config:
     
     SPLIT_RATIO=[9,1]
 
-    TRAIN_NUM_WORKERS=8
-    VALID_NUM_WORKERS=8
+    TRAIN_NUM_WORKERS=4
+    VALID_NUM_WORKERS=4
     
     BATCH_TRAIN=128
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
-    MODELS_SEEDS=[42,666,69,13,142857]
+    
+    # MODELS_SEEDS=[42,666,69,13,142857]
 
-    LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
-    LR_CHANGES_LIST=[30,20,10,15,10,5]
-    LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
+    # LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
+    # LR_CHANGES_LIST=[30,20,10,15,10,5]
+    # LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
+    
+    MODELS_SEEDS=[42,666]
+
+    LR_LIST=[0.01]
+    LR_CHANGES_LIST=[5]
+    LOSS_FUNTIONS=[wce]
+    
+    
+    
     MAX_EPOCH=np.sum(LR_CHANGES_LIST)
     
     # LOSS_FCN=wce

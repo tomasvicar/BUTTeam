@@ -23,13 +23,16 @@ from utils.utils import AdjustLearningRateAndLoss
 
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
 from driver import load_challenge_data,save_challenge_predictions
+
+
 # from evaluate_12ECG_score import evaluate_12ECG_score
-from evaluate_12ECG_score_fixed import evaluate_12ECG_score
+# from evaluate_12ECG_score_fixed import evaluate_12ECG_score
+from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
+
 
 
 def train_12ECG_classifier(input_directory, output_directory):
-    for model_num,model_seed in enumerate():
-        
+    for model_num,model_seed in enumerate(Config.MODELS_SEEDS):
         train_one_model(input_directory, output_directory,model_num,model_seed)
     
     
@@ -45,7 +48,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
 
     # Train-Test split
     state=np.random.get_state()
-    np.random.seed(42)
+    np.random.seed(model_seed)
     split_ratio_ind = int(np.floor(Config.SPLIT_RATIO[0] / (Config.SPLIT_RATIO[0] + Config.SPLIT_RATIO[1]) * num_files))
     permuted_idx = np.random.permutation(num_files)
     train_ind = permuted_idx[:split_ratio_ind]
@@ -193,7 +196,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         
         
     best_model_name=log.model_names[np.argmax(log.opt_challange_metric_test)]
-    copyfile(best_model_name,'model/model.pt')
+    copyfile(best_model_name,'model/model' + str(model_num)  + '.pt')
     
     
     
@@ -246,19 +249,9 @@ if __name__ == '__main__':
     file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
     
     num_files = len(file_list)
+   
     
-    # Train-Test split
-    state=np.random.get_state()
-    np.random.seed(42)
-    split_ratio_ind = int(np.floor(Config.SPLIT_RATIO[0] / (Config.SPLIT_RATIO[0] + Config.SPLIT_RATIO[1]) * num_files))
-    permuted_idx = np.random.permutation(num_files)
-    train_ind = permuted_idx[:split_ratio_ind]
-    valid_ind = permuted_idx[split_ratio_ind:]
-    partition = {"train": [file_list[file_idx] for file_idx in train_ind],
-        "valid": [file_list[file_idx] for file_idx in valid_ind]}
-    np.random.set_state(state)
-    
-    for file_num,file in enumerate(partition['valid']):
+    for file_num,file in enumerate(file_list):
         path,file_name=os.path.split(file)
         
         copyfile(file,input_directory + os.sep + file_name)
@@ -293,7 +286,7 @@ if __name__ == '__main__':
         print('    {}/{}...'.format(i+1, num_files))
         tmp_input_file = os.path.join(input_directory,f)
         data,header_data = load_challenge_data(tmp_input_file)
-        current_label, current_score,classes = run_12ECG_classifier(data,header_data, model)
+        current_label, current_score,classes = run_12ECG_classifier(data,header_data, model,traning_to_nan=True,file_name=f)
         # Save results.
         save_challenge_predictions(output_directory,f,current_score,current_label,classes)
 
