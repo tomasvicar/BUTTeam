@@ -9,4 +9,4 @@ cd $PBS_O_WORKDIR/
 source /home/user_pool_2/vicar/miniconda3/bin/activate
 conda activate pytorch
 
-python test_only.py
+python train_12ECG_classifier.py
