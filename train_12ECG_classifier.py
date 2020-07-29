@@ -28,7 +28,12 @@ from evaluate_12ECG_score_fixed import evaluate_12ECG_score
 
 
 def train_12ECG_classifier(input_directory, output_directory):
+    for model_num,model_seed in enumerate():
+        
+        train_one_model(input_directory, output_directory,model_num,model_seed)
     
+    
+def train_one_model(input_directory, output_directory,model_num,model_seed):   
     device = Config.DEVICE
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
