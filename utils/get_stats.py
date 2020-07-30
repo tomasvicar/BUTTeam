@@ -1,46 +1,30 @@
-from utils.datareader import DataReader
-from utils import transforms
-from utils import transforms
+from torch.utils import data as dataa
+from utils.collate import PaddedCollate
 import numpy as np
 from config import Config
+from dataset import Dataset
 
 
 def get_stats(file_names_list):
     
-    snomed_table = DataReader.read_table(path="tables/")
-    idx_mapping,label_mapping = DataReader.get_label_maps(path="tables/")
-    
-    transform=Config.TRANSFORM_DATA_VALID
-    encode=Config.TRANSFORM_LBL
+    validation_set = Dataset(file_names_list,transform=Config.TRANSFORM_DATA_VALID,encode=Config.TRANSFORM_LBL)
+    validation_generator = dataa.DataLoader(validation_set,batch_size=Config.BATCH_VALID,num_workers=Config.VALID_NUM_WORKERS,
+                                           shuffle=False,drop_last=False,collate_fn=PaddedCollate() )
     
     
     one_hots=[]
-    lens=[]
-    for idx in range(len(file_names_list)):
-        sample_file_name = file_names_list[idx]
-        header_file_name = file_names_list[idx][:-3] + "hea"
-    
-        # Read data
-        sample = DataReader.read_sample(sample_file_name)
-        header = DataReader.read_header(header_file_name, snomed_table)
+    lenss=[]
+    for it,(pad_seqs,lbls,lens) in enumerate(validation_generator):
+        print(it)
         
-        sampling_frequency, resolution, age, sex, snomed_codes, labels = header
+        one_hots.append(lbls.detach().cpu().numpy())
+        lenss.append(lens.detach().cpu().numpy())
         
-        
-        sample = transform(sample, input_sampling=sampling_frequency)
-
-        sample_length = sample.shape[1]
-
-        y = encode(snomed_codes, idx_mapping)
-        
-        one_hots.append(y)
-        lens.append(sample_length)
-        
-    one_hots=np.array(one_hots)
-    lens=np.array(lens)
+    one_hots=np.concatenate(one_hots,axis=0)
+    lenss=np.concatenate(lenss,axis=0)
     lbl_counts=np.sum(one_hots,0)
     
-    return lbl_counts,lens
+    return lbl_counts,lenss
         
         
         
