@@ -8,22 +8,21 @@ import numpy as np
 
 class Config:
     
-    DATA_DIR='../data'
-    
     MODEL_NOTE='test0'
     
-    MODEL_SAVE_DIR='../models_tmp'
     
     SPLIT_RATIO=[9,1]
 
-    TRAIN_NUM_WORKERS=8
-    VALID_NUM_WORKERS=8
+    TRAIN_NUM_WORKERS=6
+    VALID_NUM_WORKERS=6
     
-    BATCH_TRAIN=128
+    BATCH_TRAIN=64
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
     
-    MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
+    # MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
+    
+    MODELS_SEEDS=[42]
 
     LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
     LR_CHANGES_LIST=[30,20,10,15,10,5]
@@ -35,7 +34,7 @@ class Config:
 
     
     
-    DEVICE=torch.device("cuda:0")
+    DEVICE=torch.device("cuda:"+str(torch.cuda.current_device()))
     
 
     LEVELS=6
@@ -69,7 +68,7 @@ class Config:
     
     TRANSFORM_DATA_VALID=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling, gain=1),
-        transforms.BaseLineFilter(window_size=1000),
+        transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=1000),
         ])
     

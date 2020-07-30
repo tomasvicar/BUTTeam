@@ -51,12 +51,11 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
         if traning_to_nan:
             partition=model.train_names
             
-            if not file_name in partition['valid']:
+            if file_name in partition['train']:
                 score[:]=np.nan
                 label[:]=np.nan
     
-        
-        # label = score>0.5
+
         
         label =merge_labels(label)
         score =merge_labels(score)
@@ -79,12 +78,11 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
 
 def load_12ECG_model(input_directory):
     
-    input_directory='model'
-    
-    device = torch.device("cuda:"+str(torch.cuda.current_device()) if torch.cuda.is_available() else "cpu")
+
+    device = torch.device("cuda:"+str(torch.cuda.current_device()))
 
 
-    f_out='model1.pt'
+    f_out='model0.pt'
     filename = os.path.join(input_directory,f_out)
     loaded_model = torch.load(filename,map_location=device)
 

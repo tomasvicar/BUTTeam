@@ -21,6 +21,7 @@ from dataset import Dataset
 import net
 from utils.get_data_info import enumerate_labels,sub_dataset_labels_sum
 from utils.utils import AdjustLearningRateAndLoss
+from utils.get_stats import get_stats
 
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
 from driver import load_challenge_data,save_challenge_predictions
@@ -41,11 +42,24 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
     device = Config.DEVICE
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
-    file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
-    
-    
+
     num_files = len(file_list)
     print(num_files)
+
+    lbl_counts,lens=get_stats(file_list)
+      
+    file_list=[file_list[ind] for ind in range(len(file_list)) if lens[ind]>(Config.output_sampling * 105)]
+    
+
+    num_of_sigs=num_files
+
+    w_positive=num_of_sigs/lbl_counts
+    w_negative=num_of_sigs/(num_of_sigs-lbl_counts)
+    
+    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
+    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
+    
+
 
     # Train-Test split
     state=np.random.get_state()
@@ -58,21 +72,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         "valid": [file_list[file_idx] for file_idx in valid_ind]}
     np.random.set_state(state)
 
-    #### run once
-    # binary_labels=enumerate_labels(input_directory, dict(zip(list(Config.HASH_TABLE[0].keys()),list(Config.HASH_TABLE[0].values()))))
-    
-    lbl_counts=sub_dataset_labels_sum(partition["train"])    
-    num_of_sigs=len(partition["train"])
 
-    # w_positive=(num_of_sigs-lbl_counts)/lbl_counts
-    # w_negative=np.ones_like(w_positive)
-
-    w_positive=num_of_sigs/lbl_counts
-    w_negative=num_of_sigs/(num_of_sigs-lbl_counts)
-    
-    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
-    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
-    
     
     # Train dataset generator
     training_set = Dataset( partition["train"],transform=Config.TRANSFORM_DATA_TRAIN,encode=Config.TRANSFORM_LBL)
@@ -185,7 +185,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         info='model' + str(model_num) + '_'  + str(epoch) + '_' + str(lr) + '_train_'  + str(log.train_log['challange_metric'][-1]) + '_valid_' + str(log.test_log['challange_metric'][-1]) + '_validopt_' + str(log.opt_challange_metric_test[-1])
         print(info)
         
-        model_name=Config.MODEL_SAVE_DIR+ os.sep + Config.MODEL_NOTE + info  
+        model_name=output_directory+ os.sep + Config.MODEL_NOTE + info  
         log.save_log_model_name(model_name + '.pt')
         model.save_log(log)
         model.save_config(Config)
@@ -197,28 +197,23 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         
         
     best_model_name=log.model_names[np.argmax(log.opt_challange_metric_test)]
-    copyfile(best_model_name,'model/model' + str(model_num)  + '.pt')
+    copyfile(best_model_name,output_directory +'/model' + str(model_num)  + '.pt')
     
     
     
     
     
-    
-    
-
 
 if __name__ == '__main__':
     
     
     # Parse arguments.
-    input_directory = Config.DATA_DIR
-    output_directory = '../42'
+    input_directory = '../data_nofold'
+    output_directory = 'model'
 
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)
         
-    if not os.path.isdir(Config.MODEL_SAVE_DIR):
-        os.mkdir(Config.MODEL_SAVE_DIR)
 
     print('Running training code...')
 
@@ -229,41 +224,13 @@ if __name__ == '__main__':
 
 
 
+
+
     model_input = 'model'
-    input_directory = '../data_tmp'
+    input_directory = '../data_nofold'
     output_directory = '../results'
     
     
-    #####################
-    ## modified part
-    
-    try:
-        rmtree(input_directory)
-    except:
-        pass
-    
-    if not os.path.isdir(input_directory):
-        os.mkdir(input_directory)
-    
-    
-    file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
-    # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
-    
-    num_files = len(file_list)
-   
-    
-    for file_num,file in enumerate(file_list):
-        path,file_name=os.path.split(file)
-        
-        copyfile(file,input_directory + os.sep + file_name)
-        copyfile(file.replace('.mat','.hea'),input_directory + os.sep + file_name.replace('.mat','.hea'))
-    
-    try:
-        rmtree(output_directory)
-    except:
-        pass
-    
-    ##################################
 
     # Find files.
     input_files = []
@@ -293,6 +260,9 @@ if __name__ == '__main__':
 
 
     print('Done.')
+
+
+
 
     print('evaluating')
     auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric=evaluate_12ECG_score(input_directory, output_directory)

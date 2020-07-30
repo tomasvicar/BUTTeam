@@ -31,46 +31,12 @@ from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
 
 
 
+
+
+
 model_input = 'model'
-input_directory = '../data_tmp'
+input_directory = '../data_nofold'
 output_directory = '../results'
-
-
-
-
-
-#####################
-## modified part
-
-try:
-    rmtree(input_directory)
-except:
-    pass
-
-if not os.path.isdir(input_directory):
-    os.mkdir(input_directory)
-
-
-file_list = glob.glob(Config.DATA_DIR + r"/**/*.mat", recursive=True)
-# file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
-
-
-num_files = len(file_list)
-
-for file_num,file in enumerate(file_list):
-    path,file_name=os.path.split(file)
-    
-    copyfile(file,input_directory + os.sep + file_name)
-    copyfile(file.replace('.mat','.hea'),input_directory + os.sep + file_name.replace('.mat','.hea'))
-
-try:
-    rmtree(output_directory)
-except:
-    pass
-
-##################################
-
-
 
 
 
@@ -103,6 +69,9 @@ for i, f in enumerate(input_files):
 
 print('Done.')
 
+
+
+
 print('evaluating')
 auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric=evaluate_12ECG_score(input_directory, output_directory)
 
@@ -111,5 +80,3 @@ print(challenge_metric)
 output_file='notes/result' + datetime.now().strftime("%H_%M_%d_%m_%Y") + '.txt'
 with open(output_file, 'w') as f:
     f.write(str(challenge_metric))
-
-
