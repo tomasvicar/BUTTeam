@@ -48,8 +48,13 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
 
     lbl_counts,lens=get_stats(file_list)
       
-    file_list=[file_list[ind] for ind in range(len(file_list)) if lens[ind]<(Config.output_sampling * 105)]
+    file_list2=[]
+    for ind in range(len(file_list)):
+        if lens[ind]<(Config.output_sampling * 125):
+            file_list2.append(file_list[ind])
     
+    
+    file_list=file_list2
 
     num_of_sigs=num_files
 
