@@ -40,11 +40,14 @@ def get_confusion(lbls,res):
     normalizer=np.sum(lbls|res,axis=1)
     normalizer[normalizer<1]=1
     
-    num_sigs,num_classes=lbls.shape
     
-    A=np.zeros((num_classes,num_classes))
-    for sig_num in range(num_sigs):
-        A=A+lbls[[sig_num], :].T@res[[sig_num], :]/normalizer[sig_num]
+    A=lbls.astype(np.float32).T@(res.astype(np.float32)/normalizer.reshape(normalizer.shape[0],1))
+    
+    
+    # num_sigs,num_classes=lbls.shape
+    # A=np.zeros((num_classes,num_classes))
+    # for sig_num in range(num_sigs):
+    #     A=A+lbls[[sig_num], :].T@res[[sig_num], :]/normalizer[sig_num]
     
     # B=np.zeros((num_classes,num_classes))
     # for sig_num in range(num_sigs):
