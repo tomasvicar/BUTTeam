@@ -3,7 +3,7 @@ from utils.losses import wce,challange_metric_loss,FocalLoss
 import torch
 from utils.datareader import DataReader
 from utils import transforms
-
+import numpy as np
 
 
 class Config:
@@ -22,24 +22,27 @@ class Config:
     BATCH_TRAIN=128
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
-    MAX_EPOCH=71
-    STEP_SIZE=33
-    GAMMA=0.1
-    INIT_LR=0.01
+
+    LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
+    LR_CHANGES_LIST=[30,20,10,15,10,5]
+    LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
+    MAX_EPOCH=np.sum(LR_CHANGES_LIST)
     
-    DEVICE=torch.device("cuda:0")
-    
-    LOSS_FCN=wce
+    # LOSS_FCN=wce
     # LOSS_FCN=challange_metric_loss
     # LOSS_FCN=FocalLoss(gamma=2,weighted=False)
     
+    
+    DEVICE=torch.device("cuda:0")
+    
+
     LEVELS=6
-    LVL1_SIZE=4
+    LVL1_SIZE=8
     INPUT_SIZE=12
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=3
-    INIT_CONV=4
-    FILTER_SIZE=3
+    CONVS_IN_LAYERS=6
+    INIT_CONV=8
+    FILTER_SIZE=7
     
     T_OPTIMIZE_INIT=270
     T_OPTIMIZER_GP=30
@@ -52,13 +55,14 @@ class Config:
     
     output_sampling=125
     
+    
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling, gain=1),
-        transforms.BaseLineFilter(window_size=1000),
+        transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=1000),
         transforms.RandomShift(p=0.8),
-        transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
-        transforms.RandomStretch(p=0.8, max_stretch=0.2),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.4),
+        transforms.RandomStretch(p=0.8, max_stretch=0.3),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([

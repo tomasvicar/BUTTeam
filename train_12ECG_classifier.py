@@ -19,6 +19,7 @@ from utils.optimize_ts import optimize_ts,aply_ts
 from dataset import Dataset
 import net
 from utils.get_data_info import enumerate_labels,sub_dataset_labels_sum
+from utils.utils import AdjustLearningRateAndLoss
 
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
 from driver import load_challenge_data,save_challenge_predictions
@@ -87,12 +88,16 @@ def train_12ECG_classifier(input_directory, output_directory):
     model=model.to(device)
 
     ## create optimizer and learning rate scheduler to change learnng rate after 
-    optimizer = optim.Adam(model.parameters(),lr =Config.INIT_LR ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
-    scheduler= optim.lr_scheduler.StepLR(optimizer, Config.STEP_SIZE, gamma=Config.GAMMA, last_epoch=-1)
+    optimizer = optim.Adam(model.parameters(),lr =Config.LR_LIST[0] ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
+    scheduler=AdjustLearningRateAndLoss(optimizer,Config.LR_LIST,Config.LR_CHANGES_LIST,Config.LOSS_FUNTIONS)
     
     log=Log(['loss','challange_metric'])
     
     for epoch in range(Config.MAX_EPOCH):
+        
+        print(get_lr(optimizer))
+        print(scheduler.actual_loss)
+        
         
         #change model to training mode
         model.train()
@@ -109,7 +114,7 @@ def train_12ECG_classifier(input_directory, output_directory):
             res=model(pad_seqs,lens)
             
             ## calculate loss
-            loss=Config.LOSS_FCN(res,lbls,w_positive_tensor,w_negative_tensor)
+            loss=scheduler.actual_loss(res,lbls,w_positive_tensor,w_negative_tensor)
 
             ## update model 
             optimizer.zero_grad()
@@ -128,8 +133,7 @@ def train_12ECG_classifier(input_directory, output_directory):
 
             ## save results
             log.append_train([loss,challange_metric])
-            
-           
+                       
 
         model.save_lens(np.concatenate(lens_all,axis=0))
         ## validation mode - "disable" batch norm 
@@ -145,7 +149,7 @@ def train_12ECG_classifier(input_directory, output_directory):
 
             res=model(pad_seqs,lens)
             
-            loss=Config.LOSS_FCN(res,lbls,w_positive_tensor,w_negative_tensor)
+            loss=scheduler.actual_loss(res,lbls,w_positive_tensor,w_negative_tensor)
 
             loss=loss.detach().cpu().numpy()
             res=res.detach().cpu().numpy()
@@ -160,9 +164,7 @@ def train_12ECG_classifier(input_directory, output_directory):
             
             lbls_all.append(lbls)
             res_all.append(res)
-        
-        
-        
+                
         ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0)) 
         model.set_ts(ts)
         log.save_opt_challange_metric_test(opt_challenge_metric)
