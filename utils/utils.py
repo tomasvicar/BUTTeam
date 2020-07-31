@@ -93,23 +93,29 @@ def load_weights(weight_file, classes):
 
     return weights  
 
-
-
-
-class AdjustLearningRateAndLoss():
-    def __init__(self,optimizer,learning_rates_list,lr_changes_list,loss_functions):
+    
+        
+        
+class AdjustLearningRateAndLossCyclyc():
+    def __init__(self,optimizer,learning_rates_list,lr_changes_list,loss_functions,N,max_multiplier,step_size):
         self.optimizer=optimizer
         self.learning_rates_list=learning_rates_list
         self.lr_changes_list=lr_changes_list
         self.loss_functions=loss_functions
+        self.N=N
+        self.max_multiplier=max_multiplier
+        self.step_size=step_size
         
         self.actual_loss=self.loss_functions[0]
         self.actual_lr=self.learning_rates_list[0]
         self.lr_changes_cumulative=np.cumsum([0] +self.lr_changes_list)
-        self.epoch=0
+        self.iter=0
         
     def step(self):
-        self.epoch=self.epoch+1
+        self.iter=self.iter+1
+        self.epoch=self.iter//self.N
+        
+        
 
         try:
             with open('put_here_to_aply/lr_change.txt', 'r') as f:
@@ -132,14 +138,19 @@ class AdjustLearningRateAndLoss():
                 self.actual_loss=self.loss_functions[ind]
                 self.actual_lr=self.learning_rates_list[ind]
 
+
+
+        cycle_size=self.step_size*2
+        iter_in_cycle=self.iter%(cycle_size*self.N)
+        
+        factor=1-np.abs((iter_in_cycle)/(cycle_size*self.N/2)-1)
+        lr=self.actual_lr + (self.max_multiplier*self.actual_lr - self.actual_lr)*factor
+
+
+
         for param_group in self.optimizer.param_groups:
-            param_group['lr'] =self.actual_lr
-    
-        
-    
-        
-        
-        
-        
+            param_group['lr'] =lr
+
+
 
 

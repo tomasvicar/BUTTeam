@@ -23,11 +23,15 @@ class Config:
     # MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
     
     MODELS_SEEDS=[42]
+    
+    max_multiplier=10
+    step_size=2
 
-    LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
-    LR_CHANGES_LIST=[30,20,10,15,10,5]
+    LR_LIST=[0.001,0.0001,0.00001,0.001,0.0001,0.00001]
+    LR_CHANGES_LIST=[12,8,4,4,4,4]
     LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
     
+
 
     
     MAX_EPOCH=np.sum(LR_CHANGES_LIST)

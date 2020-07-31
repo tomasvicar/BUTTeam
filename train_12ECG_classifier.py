@@ -21,7 +21,7 @@ from utils.compute_challenge_metric_custom import compute_challenge_metric_custo
 from utils.optimize_ts import optimize_ts,aply_ts
 from dataset import Dataset
 import net
-from utils.utils import AdjustLearningRateAndLoss
+from utils.utils import AdjustLearningRateAndLossCyclyc
 from utils.get_stats import get_stats
 
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
@@ -104,7 +104,8 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
 
     ## create optimizer and learning rate scheduler to change learnng rate after 
     optimizer = optim.Adam(model.parameters(),lr =Config.LR_LIST[0] ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
-    scheduler=AdjustLearningRateAndLoss(optimizer,Config.LR_LIST,Config.LR_CHANGES_LIST,Config.LOSS_FUNTIONS)
+    N=len(training_generator)
+    scheduler=AdjustLearningRateAndLossCyclyc(optimizer,Config.LR_LIST,Config.LR_CHANGES_LIST,Config.LOSS_FUNTIONS,N,Config.max_multiplier,Config.step_size)
     
     log=Log(['loss','challange_metric'])
     
@@ -148,6 +149,8 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
 
             ## save results
             log.append_train([loss,challange_metric])
+            
+            scheduler.step()
                        
 
         model.save_lens(np.concatenate(lens_all,axis=0))
@@ -199,7 +202,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
             
         log.plot(model_name)
         
-        scheduler.step()
+        
         
         
     best_model_name=log.model_names[np.argmax(log.opt_challange_metric_test)]
