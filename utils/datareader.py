@@ -1,5 +1,6 @@
 import os
 import scipy.io as io
+import numpy as np
 import pandas
 import math
 import glob
@@ -15,6 +16,31 @@ class DataReader:
         "59118001": "713427006",
         "63593006": "284470004",
         "17338001": "427172004",
+        "195042002": "164947007",
+        "251173003": "284470004",
+        "251268003": "10370003",
+        "233917008": "164947007",
+        "251170000": "284470004",
+        "426749004": "164889003",
+        "204384007": "164947007",
+        "82226007": "698252002",
+        "54016002": "164947007",
+        "282825002": "164889003",
+        "425419005": "39732003",
+        "445211001": "47665007",
+        "89792004": "47665007",
+        "251266004": "10370003",
+        "164873001": "39732003",
+        "195080001": "164889003",
+        "251182009": "427172004",
+        "164865005": "164917005",
+        "11157007": "17338001",
+        "164884008": "17338001",
+        "251168009": "63593006",
+    }
+
+    snomed_conditional_mapping = {
+        "270492004": "164947007"
     }
 
     # Remap sex categories description
@@ -41,7 +67,7 @@ class DataReader:
             return None
 
     @staticmethod
-    def read_header(file_name, snomed_table,from_file=True):
+    def read_header(file_name, snomed_table, from_file=True):
         """Function saves information about the patient from header file in this order:
         sampling frequency, length of the signal, voltage resolution, age, sex, list of diagnostic labels both in
         SNOMED and abbreviations (sepate lists)"""
@@ -108,6 +134,14 @@ class DataReader:
                     snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
                     break
 
+        # Add conditional snomed codes
+        for code in DataReader.snomed_conditional_mapping:
+            if code in snomed_codes:
+                snomed_codes.append(DataReader.snomed_conditional_mapping[code])
+
+        # Remove duplicates
+        snomed_codes = list(set(snomed_codes))
+
         # Remap Snomed Codes to labels
         labels = [snomed_table[int(item)] for item in snomed_codes]
 
@@ -137,11 +171,9 @@ def main():
 
     sample_file_name = "E:\\data\\Physionet2020\\Training_StPetersburg\\I0043.mat"
     header_file_name = "E:\\data\\Physionet2020\\Training_StPetersburg\\I0043.hea"
-    snomed_table = DataReader.read_table(path="")
+    snomed_table = DataReader.read_table(path="E:\\research\\physionet_challenge\\cinc_2020\\tables\\")
 
-    sample = DataReader.read_sample(sample_file_name)
-    header = DataReader.read_header(header_file_name, snomed_table)
-    idx_mapping, label_mapping = DataReader.get_label_maps(path="")
+    idx_mapping, label_mapping = DataReader.get_label_maps(path="E:\\research\\physionet_challenge\\cinc_2020\\tables\\")
 
 
 if __name__ == "__main__":
