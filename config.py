@@ -25,7 +25,7 @@ class Config:
     MODELS_SEEDS=[42]
 
     LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
-    LR_CHANGES_LIST=[30,20,10,15,10,5]
+    LR_CHANGES_LIST=[30,20,10,15,10,10]
     LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
     
 

@@ -11,6 +11,7 @@ from shutil import copyfile,rmtree
 from datetime import datetime
 import logging
 import sys
+import torchcontrib
 
 
 from utils.utils import get_lr
@@ -104,6 +105,8 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
 
     ## create optimizer and learning rate scheduler to change learnng rate after 
     optimizer = optim.Adam(model.parameters(),lr =Config.LR_LIST[0] ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
+    # optimizer = optim.SGD(model.parameters(),lr =Config.LR_LIST[0],momentum=0.9 ,weight_decay=1e-8)
+    optimizer_swa = torchcontrib.optim.SWA(optimizer)
     scheduler=AdjustLearningRateAndLoss(optimizer,Config.LR_LIST,Config.LR_CHANGES_LIST,Config.LOSS_FUNTIONS)
     
     log=Log(['loss','challange_metric'])
@@ -148,6 +151,10 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
 
             ## save results
             log.append_train([loss,challange_metric])
+            
+            if epoch>=(Config.MAX_EPOCH-5) and it%50==0:
+                optimizer_swa.update_swa()
+            
                        
 
         model.save_lens(np.concatenate(lens_all,axis=0))
@@ -179,7 +186,12 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
             
             lbls_all.append(lbls)
             res_all.append(res)
-                
+              
+            
+        if epoch==(Config.MAX_EPOCH-1):
+            optimizer_swa.swap_swa_sgd()
+            
+            
         ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0)) 
         model.set_ts(ts)
         log.save_opt_challange_metric_test(opt_challenge_metric)
@@ -201,8 +213,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         
         scheduler.step()
         
-        
-    best_model_name=log.model_names[np.argmax(log.opt_challange_metric_test)]
+    best_model_name=log.model_names[-1]
     copyfile(best_model_name,output_directory +'/model' + str(model_num)  + '.pt')
     
     
