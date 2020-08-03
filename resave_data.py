@@ -12,8 +12,7 @@ from datetime import datetime
 
 
 
-model_input = 'model'
-input_directory = '../data_nofold'
+input_directory = '../data_nofold_resfix'
 
 
 #####################
@@ -28,7 +27,7 @@ if not os.path.isdir(input_directory):
     os.mkdir(input_directory)
 
 
-file_list = glob.glob('../data' + r"/**/*.mat", recursive=True)
+file_list = glob.glob('../data_resfix' + r"/**/*.mat", recursive=True)
 # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
 
 num_files = len(file_list)
@@ -40,7 +39,3 @@ for file_num,file in enumerate(file_list):
     copyfile(file,input_directory + os.sep + file_name)
     copyfile(file.replace('.mat','.hea'),input_directory + os.sep + file_name.replace('.mat','.hea'))
 
-try:
-    rmtree(output_directory)
-except:
-    pass

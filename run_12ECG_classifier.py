@@ -14,7 +14,7 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
 
     transform=Config.TRANSFORM_DATA_VALID
     if transform:
-        data = transform(data, input_sampling=sampling_frequency)
+        data = transform(data, input_sampling=sampling_frequency,gain=1/np.array(resolution))
 
     
 

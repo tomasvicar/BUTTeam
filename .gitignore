@@ -13,3 +13,6 @@ model/*
 !model/model7.pt
 !model/model8.pt
 !model/model9.pt
+
+
+debug.log

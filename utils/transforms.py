@@ -191,13 +191,14 @@ class RandomLeadSwitch(object):
 
 
 class Resample:
-    def __init__(self, output_sampling=500, gain=1):
-        self.gain = gain
+    def __init__(self, output_sampling=500):
         self.output_sampling = int(output_sampling)
 
-    def __call__(self, sample, input_sampling):
-        # if current_gain != self.gain:
-        #     current_gain = current_gain / self.gain
+    def __call__(self, sample, input_sampling,gain):
+        
+        sample=sample.astype(np.float32)
+        for k in range(sample.shape[0]):
+            sample[k,:]=sample[k,:]*gain[k]
 
         # Rescale data
         self.sample = sample

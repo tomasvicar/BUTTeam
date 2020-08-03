@@ -60,53 +60,38 @@ class DataReader:
             else:
                 return value
 
-        # Read line 15 in header file and parse string with labels
         if from_file:
+            lines=[]
             with open(file_name, "r") as file:
                 for line_idx, line in enumerate(file):
-                    if line_idx == 0:
-                        sampling_frequency = float(line.split(" ")[2])
-                        continue
-                    if line_idx == 1:
-                        resolution = string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", ""))
-                        continue
-                    if line_idx == 13:
-                        age = string_to_float(line.strip("#Age: ").rstrip("\n"))
-                        continue
-                    if line_idx == 14:
-                        sex = line.strip("#Sex: ").rstrip("\n").lower()
-                        if sex not in DataReader.sex_mapping:
-                            sex = None
-                        else:
-                            sex = DataReader.sex_mapping[sex]
-                        continue
-                    if line_idx == 15:
-                        snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
-                        snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
-                        break
-        ### if header is already in list (for evaluatation code)
+                    lines.append(line)
         else:
-            for line_idx, line in enumerate(file_name):
-                if line_idx == 0:
-                    sampling_frequency = float(line.split(" ")[2])
-                    continue
-                if line_idx == 1:
-                    resolution = string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", ""))
-                    continue
-                if line_idx == 13:
-                    age = string_to_float(line.strip("#Age: ").rstrip("\n"))
-                    continue
-                if line_idx == 14:
-                    sex = line.strip("#Sex: ").rstrip("\n").lower()
-                    if sex not in DataReader.sex_mapping:
-                        sex = None
-                    else:
-                        sex = DataReader.sex_mapping[sex]
-                    continue
-                if line_idx == 15:
-                    snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
-                    snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
-                    break
+            lines=file_name
+
+        # Read line 15 in header file and parse string with labels
+
+        resolution=[]
+        for line_idx, line in enumerate(lines):
+            if line_idx == 0:
+                sampling_frequency = float(line.split(" ")[2])
+                continue
+            if 1<=line_idx<=12:
+                resolution.append(string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", "")))
+                continue
+            if line_idx == 13:
+                age = string_to_float(line.strip("#Age: ").rstrip("\n"))
+                continue
+            if line_idx == 14:
+                sex = line.strip("#Sex: ").rstrip("\n").lower()
+                if sex not in DataReader.sex_mapping:
+                    sex = None
+                else:
+                    sex = DataReader.sex_mapping[sex]
+                continue
+            if line_idx == 15:
+                snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
+                snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
+                break
 
         # Remap Snomed Codes to labels
         labels = [snomed_table[int(item)] for item in snomed_codes]

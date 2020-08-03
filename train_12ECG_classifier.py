@@ -214,7 +214,7 @@ if __name__ == '__main__':
     logging.basicConfig(filename='debug.log',level=logging.INFO)
     try:
         # Parse arguments.
-        input_directory = '../data_nofold'
+        input_directory = '../data_nofold_resfix'
         output_directory = 'model'
     
         if not os.path.isdir(output_directory):
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     
     
         model_input = 'model'
-        input_directory = '../data_nofold'
+        input_directory = '../data_nofold_resfix'
         output_directory = '../results'
         
         

@@ -42,7 +42,7 @@ class Dataset(data.Dataset):
 
         # Transform sample
         if self.transform:
-            sample = self.transform(sample, input_sampling=sampling_frequency)
+            sample = self.transform(sample, input_sampling=sampling_frequency,gain=1/np.array(resolution))
 
         sample_length = sample.shape[1]
 
