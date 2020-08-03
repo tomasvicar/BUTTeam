@@ -104,7 +104,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
     model=model.to(device)
 
     ## create optimizer and learning rate scheduler to change learnng rate after 
-    optimizer = optim.Adam(model.parameters(),lr =Config.LR_LIST[0] ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
+    optimizer = optim.AdamW(model.parameters(),lr =Config.LR_LIST[0] ,betas= (0.9, 0.999),eps=1e-5,weight_decay=1e-8)
     # optimizer = optim.SGD(model.parameters(),lr =Config.LR_LIST[0],momentum=0.9 ,weight_decay=1e-8)
     optimizer_swa = torchcontrib.optim.SWA(optimizer)
     scheduler=AdjustLearningRateAndLoss(optimizer,Config.LR_LIST,Config.LR_CHANGES_LIST,Config.LOSS_FUNTIONS)
