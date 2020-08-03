@@ -35,12 +35,18 @@ from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
 
 
 
-def train_12ECG_classifier(input_directory, output_directory):
+def train_12ECG_classifier(input_directory, output_directory,measure_gpu=False):
     for model_num,model_seed in enumerate(Config.MODELS_SEEDS):
-        train_one_model(input_directory, output_directory,model_num,model_seed)
+        train_one_model(input_directory, output_directory,model_num,model_seed,measure_gpu)
     
     
-def train_one_model(input_directory, output_directory,model_num,model_seed):   
+def train_one_model(input_directory, output_directory,model_num,model_seed,measure_gpu):   
+    
+    if measure_gpu:
+        import nvidia_smi
+        nvidia_smi.nvmlInit()
+        measured=[]
+    
     device = Config.DEVICE
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
@@ -133,12 +139,23 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
             
             ## calculate loss
             loss=scheduler.actual_loss(res,lbls,w_positive_tensor,w_negative_tensor)
+            
+            if measure_gpu:
+                import nvidia_smi
+                handle = nvidia_smi.nvmlDeviceGetHandleByIndex(0)
+                info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
+                measured.append(info.used/1000000000)
 
             ## update model 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
+            if measure_gpu:
+                import nvidia_smi
+                handle = nvidia_smi.nvmlDeviceGetHandleByIndex(0)
+                info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
+                measured.append(info.used/1000000000)
 
             loss=loss.detach().cpu().numpy()
             res=res.detach().cpu().numpy()
@@ -173,6 +190,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
             
             loss=scheduler.actual_loss(res,lbls,w_positive_tensor,w_negative_tensor)
 
+
             loss=loss.detach().cpu().numpy()
             res=res.detach().cpu().numpy()
             lbls=lbls.detach().cpu().numpy()
@@ -186,6 +204,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
             
             lbls_all.append(lbls)
             res_all.append(res)
+
               
             
         if epoch==(Config.MAX_EPOCH-1):
@@ -213,9 +232,15 @@ def train_one_model(input_directory, output_directory,model_num,model_seed):
         
         scheduler.step()
         
+
+        
     best_model_name=log.model_names[-1]
     copyfile(best_model_name,output_directory +'/model' + str(model_num)  + '.pt')
     
+    if measure_gpu:
+        output_file='notes/gpu' + datetime.now().strftime("%H_%M_%d_%m_%Y") + '.txt'
+        with open(output_file, 'w') as f:
+            f.write(str(np.max(measured)))
     
     
     
@@ -234,7 +259,7 @@ if __name__ == '__main__':
     
         print('Running training code...')
     
-        train_12ECG_classifier(input_directory, output_directory)
+        train_12ECG_classifier(input_directory, output_directory,measure_gpu=1)
     
         print('Done.')
         
