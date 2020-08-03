@@ -9,38 +9,41 @@ from torch.utils import data as dataa
 import torch
 from shutil import copyfile,rmtree
 from datetime import datetime
+import logging
+import sys
 
-
-
-model_input = 'model'
-input_directory = '../data_nofold'
-
-
-#####################
-## modified part
+logging.basicConfig(filename='debug.log',level=logging.INFO)
 
 try:
-    rmtree(input_directory)
-except:
-    pass
-
-if not os.path.isdir(input_directory):
-    os.mkdir(input_directory)
-
-
-file_list = glob.glob('../data' + r"/**/*.mat", recursive=True)
-# file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
-
-num_files = len(file_list)
-   
-
-for file_num,file in enumerate(file_list):
-    path,file_name=os.path.split(file)
     
-    copyfile(file,input_directory + os.sep + file_name)
-    copyfile(file.replace('.mat','.hea'),input_directory + os.sep + file_name.replace('.mat','.hea'))
+    model_input = 'model'
+    input_directory = '../data_nofold'
+    
+    
+    #####################
+    ## modified part
+    
+    try:
+        rmtree(input_directory)
+    except:
+        pass
+    
+    if not os.path.isdir(input_directory):
+        os.mkdir(input_directory)
+    
+    
+    file_list = glob.glob('../data' + r"/**/*.mat", recursive=True)
+    # file_list =[x for x in file_list if 'Training_StPetersburg' not in x]
+    
+    num_files = len(file_list)
+       
+    
+    for file_num,file in enumerate(file_list):
+        path,file_name=os.path.split(file)
+        
+        copyfile(file,input_directory + os.sep + file_name)
+        copyfile(file.replace('.mat','.hea'),input_directory + os.sep + file_name.replace('.mat','.hea'))
 
-try:
-    rmtree(output_directory)
-except:
-    pass
+    
+except Exception as e:
+    logging.critical(e, exc_info=True)

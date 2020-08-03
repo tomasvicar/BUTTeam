@@ -14,7 +14,7 @@ class Config:
     SPLIT_RATIO=[9,1]
 
     TRAIN_NUM_WORKERS=6
-    VALID_NUM_WORKERS=6
+    VALID_NUM_WORKERS=0
     
     BATCH_TRAIN=128
     BATCH_VALID=BATCH_TRAIN ## sould be same

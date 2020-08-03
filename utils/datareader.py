@@ -68,7 +68,7 @@ class DataReader:
                         sampling_frequency = float(line.split(" ")[2])
                         continue
                     if line_idx == 1:
-                        resolution = string_to_float(line.split(" ")[2].replace("/mV", ""))
+                        resolution = string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", ""))
                         continue
                     if line_idx == 13:
                         age = string_to_float(line.strip("#Age: ").rstrip("\n"))
@@ -91,7 +91,7 @@ class DataReader:
                     sampling_frequency = float(line.split(" ")[2])
                     continue
                 if line_idx == 1:
-                    resolution = string_to_float(line.split(" ")[2].replace("/mV", ""))
+                    resolution = string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", ""))
                     continue
                 if line_idx == 13:
                     age = string_to_float(line.strip("#Age: ").rstrip("\n"))
