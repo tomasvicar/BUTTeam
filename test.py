@@ -35,7 +35,7 @@ from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
 
 
 model_input = 'model'
-input_directory = '../data_nofold'
+input_directory = '../data_nofold_resfix'
 output_directory = '../results'
 
 
