@@ -141,7 +141,6 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
             loss=scheduler.actual_loss(res,lbls,w_positive_tensor,w_negative_tensor)
             
             if measure_gpu:
-                import nvidia_smi
                 handle = nvidia_smi.nvmlDeviceGetHandleByIndex(0)
                 info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
                 measured.append(info.used/1000000000)
@@ -152,7 +151,6 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
             optimizer.step()
 
             if measure_gpu:
-                import nvidia_smi
                 handle = nvidia_smi.nvmlDeviceGetHandleByIndex(0)
                 info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
                 measured.append(info.used/1000000000)

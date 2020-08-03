@@ -3,6 +3,8 @@ __pycache__/*
 
 model/*
 
+model_*/*
+
 !model/model0.pt
 !model/model1.pt
 !model/model2.pt
