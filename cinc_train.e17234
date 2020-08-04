@@ -1,0 +1,4 @@
+/home/user_pool_2/vicar/cinc2020_102/BUTTeam/run_12ECG_classifier.py:68: RuntimeWarning: Mean of empty slice
+  score=np.nanmean(np.array(all_score),0)
+/home/user_pool_2/vicar/cinc2020_102/BUTTeam/run_12ECG_classifier.py:69: RuntimeWarning: Mean of empty slice
+  label=np.nanmean(np.array(all_label),0)
