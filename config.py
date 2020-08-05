@@ -24,7 +24,7 @@ class Config:
     
     MODELS_SEEDS=[42]
 
-    LR_LIST=[0.01,0.001,0.0001,0.01,0.001,0.0001]
+    LR_LIST=np.array([0.01,0.001,0.0001,0.01,0.001,0.0001])/10
     LR_CHANGES_LIST=[30,20,10,15,10,10]
     LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
     
@@ -61,9 +61,9 @@ class Config:
         transforms.Resample(output_sampling=output_sampling),
         transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=std),
-        transforms.RandomShift(p=0.8),
-        transforms.RandomAmplifier(p=0.8,max_multiplier=0.4),
-        transforms.RandomStretch(p=0.8, max_stretch=0.3),
+        transforms.RandomShift(p=0.0001),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.1),
+        transforms.RandomStretch(p=0.8, max_stretch=0.1),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([
