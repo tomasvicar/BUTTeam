@@ -89,9 +89,13 @@ class DataReader:
                     sex = DataReader.sex_mapping[sex]
                 continue
             if line_idx == 15:
-                snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
-                snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
-                break
+                if from_file:
+                    snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
+                    snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
+                    break
+                else:
+                    snomed_codes=[]
+                    break
 
         # Remap Snomed Codes to labels
         labels = [snomed_table[int(item)] for item in snomed_codes]
