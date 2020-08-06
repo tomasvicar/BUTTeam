@@ -4,14 +4,14 @@ from utils import transforms
 
 import numpy as np
 import glob
+from config import Config
 
 
 class Dataset(data.Dataset):
     """
     PyTorch Dataset generator class
     Ref: https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
-    """
-    mean_age = 61.4
+    """ 
 
     def __init__(self, file_names, transform=None, encode=False):
         """Initialization"""
@@ -37,12 +37,27 @@ class Dataset(data.Dataset):
 
         sampling_frequency, resolution, age, sex, snomed_codes, labels = header
 
-        if age is None:
-            age = Dataset.mean_age
+        
+            
+        
 
         # Transform sample
         if self.transform:
             sample = self.transform(sample, input_sampling=sampling_frequency,gain=1/np.array(resolution))
+
+        if age is None:
+            age = 61.4
+        agee=(age-50)/50
+        if sex=='male':
+            sexx=1
+        elif sex=='female':
+            sexx=-1
+        else:
+            sexx=0
+            
+        if Config.SEX_AND_AGE:
+            sample=np.concatenate((sample,sexx*np.ones((1,sample.shape[1]),dtype=np.float32),agee*np.ones((1,sample.shape[1]),dtype=np.float32)),axis=0)
+
 
         sample_length = sample.shape[1]
 

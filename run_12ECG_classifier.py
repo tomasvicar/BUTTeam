@@ -16,7 +16,17 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
     if transform:
         data = transform(data, input_sampling=sampling_frequency,gain=1/np.array(resolution))
 
-    
+    if age is None:
+        age = 61.4
+    agee=(age-50)/50
+    if sex=='male':
+        sexx=1
+    elif sex=='female':
+        sexx=-1
+    else:
+        sexx=0
+    if models[0].config.SEX_AND_AGE:
+        data=np.concatenate((data,sexx*np.ones((1,data.shape[1]),dtype=np.float32),agee*np.ones((1,data.shape[1]),dtype=np.float32)),axis=0)
 
 
     lens_all=models[0].lens

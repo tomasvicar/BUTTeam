@@ -37,9 +37,15 @@ class Config:
     DEVICE=torch.device("cuda:"+str(torch.cuda.current_device()))
     
 
+    SEX_AND_AGE=True
+    
+    if SEX_AND_AGE:
+        INPUT_SIZE=14
+    else:
+        INPUT_SIZE=12
+
     LEVELS=6
     LVL1_SIZE=6
-    INPUT_SIZE=12
     OUTPUT_SIZE=24
     CONVS_IN_LAYERS=4
     INIT_CONV=6
