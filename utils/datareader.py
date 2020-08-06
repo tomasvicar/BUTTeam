@@ -70,7 +70,10 @@ class DataReader:
 
         # Read line 15 in header file and parse string with labels
 
+        snomed_codes = []
         resolution=[]
+        age=None
+        sex=None
         for line_idx, line in enumerate(lines):
             if line_idx == 0:
                 sampling_frequency = float(line.split(" ")[2])
@@ -78,25 +81,24 @@ class DataReader:
             if 1<=line_idx<=12:
                 resolution.append(string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", "")))
                 continue
-            if line_idx == 13:
-                age = string_to_float(line.strip("#Age: ").rstrip("\n"))
+            if line.startswith('#Age'):
+                age = string_to_float(line.replace("#Age:","").replace("#Age","").rstrip("\n").strip())
                 continue
-            if line_idx == 14:
-                sex = line.strip("#Sex: ").rstrip("\n").lower()
+            if line.startswith('#Sex'):
+                sex = line.replace("#Sex:","").replace("#Sex","").rstrip("\n").strip().lower()
                 if sex not in DataReader.sex_mapping:
                     sex = None
                 else:
                     sex = DataReader.sex_mapping[sex]
                 continue
-            if line_idx == 15:
-                snomed_codes = line.replace("#Dx: ", "").rstrip("\n").split(",")
-                snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
-                break
+            if line.startswith('#Dx'):
+                if from_file:
+                    snomed_codes = line.replace("#Dx:","").replace("#Dx","").rstrip("\n").strip().split(",")
+                    snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
+                continue
 
-        # Remap Snomed Codes to labels
-        labels = [snomed_table[int(item)] for item in snomed_codes]
 
-        return sampling_frequency, resolution, age, sex, snomed_codes, labels
+        return sampling_frequency, resolution, age, sex, snomed_codes
 
     @staticmethod
     def get_label_maps(path="tables/"):

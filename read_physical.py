@@ -35,6 +35,9 @@ for file_ind,file in enumerate(file_list):
     sampling_frequency, resolution, age, sex, snomed_codes, labels = header
     
     print(age,sex)
+    print(snomed_codes)
+    print(resolution)
+    print(sampling_frequency)
     
     ages.append(age)
     sexes.append(sex)

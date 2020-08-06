@@ -10,7 +10,7 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
 
     snomed_table = DataReader.read_table(path="tables/")
     header = DataReader.read_header(header_data, snomed_table,from_file=False)
-    sampling_frequency, resolution, age, sex, snomed_codes, labels = header
+    sampling_frequency, resolution, age, sex, snomed_codes = header
 
     transform=Config.TRANSFORM_DATA_VALID
     if transform:

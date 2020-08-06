@@ -35,7 +35,7 @@ class Dataset(data.Dataset):
         sample = DataReader.read_sample(sample_file_name)
         header = DataReader.read_header(header_file_name, self.snomed_table)
 
-        sampling_frequency, resolution, age, sex, snomed_codes, labels = header
+        sampling_frequency, resolution, age, sex, snomed_codes = header
 
         
             
