@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import random
+from config import Config
 
 
 class PaddedCollate:
@@ -10,7 +11,7 @@ class PaddedCollate:
     def __init__(self, dim=1, val=0):
         self.dim = dim
         self.padding_value = val
-        self.num_channels = 12
+        self.num_channels = Config.INPUT_SIZE
 
     def pad_collate(self, batch):
         """

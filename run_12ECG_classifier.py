@@ -76,7 +76,7 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
         
     
     score=np.nanmean(np.array(all_score),0)
-    label=np.nanmean(np.array(all_label),0)
+    label=np.round(np.nanmean(np.array(all_label),0))
         
         
     label=label.astype(int)    
