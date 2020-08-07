@@ -39,6 +39,8 @@ class Config:
     DEVICE=torch.device("cuda:"+str(torch.cuda.current_device()))
     
     
+    REMAP=True
+    
     weight_decay=1e-5
     
     SWA=False
@@ -54,10 +56,10 @@ class Config:
         INPUT_SIZE=12
 
     LEVELS=6
-    LVL1_SIZE=6
+    LVL1_SIZE=4
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=4
-    INIT_CONV=6
+    CONVS_IN_LAYERS=2
+    INIT_CONV=4
     FILTER_SIZE=7
     
     T_OPTIMIZE_INIT=270

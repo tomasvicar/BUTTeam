@@ -13,13 +13,14 @@ class Dataset(data.Dataset):
     Ref: https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
     """ 
 
-    def __init__(self, file_names, transform=None, encode=False):
+    def __init__(self, file_names, transform=None, encode=False,remap=False):
         """Initialization"""
         self.snomed_table = DataReader.read_table(path="tables/")
         self.idx_mapping, self.label_mapping = DataReader.get_label_maps(path="tables/")
         self.file_names_list = file_names
         self.transform = transform
         self.encode = encode
+        self.remap=remap
 
     def __len__(self):
         """Return total number of data samples"""
@@ -33,7 +34,7 @@ class Dataset(data.Dataset):
 
         # Read data
         sample = DataReader.read_sample(sample_file_name)
-        header = DataReader.read_header(header_file_name, self.snomed_table)
+        header = DataReader.read_header(header_file_name, self.snomed_table,remap=self.remap)
 
         sampling_frequency, resolution, age, sex, snomed_codes = header
 

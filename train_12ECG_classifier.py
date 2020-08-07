@@ -88,7 +88,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
 
     
     # Train dataset generator
-    training_set = Dataset( partition["train"],transform=Config.TRANSFORM_DATA_TRAIN,encode=Config.TRANSFORM_LBL)
+    training_set = Dataset( partition["train"],transform=Config.TRANSFORM_DATA_TRAIN,encode=Config.TRANSFORM_LBL,remap=Config.REMAP)
     training_generator = dataa.DataLoader(training_set,batch_size=Config.BATCH_TRAIN,num_workers=Config.TRAIN_NUM_WORKERS,
                                          shuffle=True,drop_last=True,collate_fn=PaddedCollate() )
     
