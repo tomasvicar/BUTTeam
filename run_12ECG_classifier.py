@@ -5,7 +5,6 @@ from utils.datareader import DataReader
 from config import Config
 from utils.optimize_ts import aply_ts
 
-
 def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=None):
 
     snomed_table = DataReader.read_table(path="tables/")
@@ -16,16 +15,17 @@ def run_12ECG_classifier(data,header_data,models,traning_to_nan=False,file_name=
     if transform:
         data = transform(data, input_sampling=sampling_frequency,gain=1/np.array(resolution))
 
-    if age is None:
-        age = 61.4
-    agee=(age-50)/50
-    if sex=='male':
-        sexx=1
-    elif sex=='female':
-        sexx=-1
-    else:
-        sexx=0
+    
     if models[0].config.SEX_AND_AGE:
+        if age is None:
+            age = 61.4
+        agee=(age-50)/50
+        if sex=='male':
+            sexx=1
+        elif sex=='female':
+            sexx=-1
+        else:
+            sexx=0
         data=np.concatenate((data,sexx*np.ones((1,data.shape[1]),dtype=np.float32),agee*np.ones((1,data.shape[1]),dtype=np.float32)),axis=0)
 
 
@@ -136,7 +136,7 @@ def generate_batch(sample, random_batch_length,sampling_freq):
         max_length = max(random_batch_length, offsets_list[-1] - onsets_list[-1])
 
         # Initialize batch
-        batch = np.zeros([num_of_chunks, 12, max_length])
+        batch = np.zeros([num_of_chunks, sample.shape[0], max_length])
 
         # Generate batch from sample chunks
         for idx, onset, offset in zip(range(num_of_chunks), onsets_list, offsets_list):
@@ -148,7 +148,7 @@ def generate_batch(sample, random_batch_length,sampling_freq):
         max_length = max(random_batch_length, sample.shape[1])
 
         # Initialize batch
-        batch = np.zeros([1, 12, max_length])
+        batch = np.zeros([1, sample.shape[0], max_length])
         # Generate batch
         batch[0, :, :sample.shape[1]] = sample
         

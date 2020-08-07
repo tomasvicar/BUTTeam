@@ -45,17 +45,17 @@ class Dataset(data.Dataset):
         if self.transform:
             sample = self.transform(sample, input_sampling=sampling_frequency,gain=1/np.array(resolution))
 
-        if age is None:
-            age = 61.4
-        agee=(age-50)/50
-        if sex=='male':
-            sexx=1
-        elif sex=='female':
-            sexx=-1
-        else:
-            sexx=0
-            
+ 
         if Config.SEX_AND_AGE:
+            if age is None:
+                age = 61.4
+            agee=(age-50)/50
+            if sex=='male':
+                sexx=1
+            elif sex=='female':
+                sexx=-1
+            else:
+                sexx=0
             sample=np.concatenate((sample,sexx*np.ones((1,sample.shape[1]),dtype=np.float32),agee*np.ones((1,sample.shape[1]),dtype=np.float32)),axis=0)
 
 

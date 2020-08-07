@@ -38,8 +38,15 @@ class Config:
     
     DEVICE=torch.device("cuda:"+str(torch.cuda.current_device()))
     
+    
+    weight_decay=1e-5
+    
+    SWA=False
+    SWA_NUM_EPOCHS=5
+    SWA_IT_FREQ=50
+    
 
-    SEX_AND_AGE=True
+    SEX_AND_AGE=False
     
     if SEX_AND_AGE:
         INPUT_SIZE=14
@@ -62,7 +69,7 @@ class Config:
     SNOMED_24_ORDERD_LIST=list(HASH_TABLE[0].keys())
     
     
-    output_sampling=175
+    output_sampling=125
     std=0.2
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
