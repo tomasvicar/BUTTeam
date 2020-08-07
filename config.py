@@ -54,7 +54,7 @@ class Config:
     SNOMED_24_ORDERD_LIST=list(HASH_TABLE[0].keys())
     
     
-    output_sampling=125
+    output_sampling=175
     std=0.2
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
