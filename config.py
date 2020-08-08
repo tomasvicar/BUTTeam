@@ -39,7 +39,7 @@ class Config:
     DEVICE=torch.device("cuda:"+str(torch.cuda.current_device()))
     
     
-    REMAP=True
+    REMAP=False
     
     weight_decay=1e-5
     
