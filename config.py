@@ -16,7 +16,7 @@ class Config:
     TRAIN_NUM_WORKERS=6
     VALID_NUM_WORKERS=6
     
-    BATCH_TRAIN=128
+    BATCH_TRAIN=32
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
     
@@ -56,10 +56,10 @@ class Config:
         INPUT_SIZE=12
 
     LEVELS=6
-    LVL1_SIZE=6
+    LVL1_SIZE=6*7
     OUTPUT_SIZE=24
     CONVS_IN_LAYERS=4
-    INIT_CONV=6
+    INIT_CONV=LVL1_SIZE
     FILTER_SIZE=7
     
     T_OPTIMIZE_INIT=270
