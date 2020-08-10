@@ -16,7 +16,7 @@ def aply_ts(res_all,ts):
     return res_binar
 
 
-def optimize_ts(res_all,lbls_all):
+def optimize_ts(res_all,lbls_all,fast=False):
     
     def evaluate_ts(normalize=False,**ts):
         
@@ -38,7 +38,10 @@ def optimize_ts(res_all,lbls_all):
     
     optimizer = BayesianOptimization(f=func,pbounds=pbounds,random_state=1)  
       
-    optimizer.maximize(init_points=Config.T_OPTIMIZE_INIT,n_iter=Config.T_OPTIMIZER_GP)
+    if fast:
+        optimizer.maximize(init_points=200,n_iter=0)
+    else:
+        optimizer.maximize(init_points=Config.T_OPTIMIZE_INIT,n_iter=Config.T_OPTIMIZER_GP)
     
     
     ts=optimizer.max['params']
