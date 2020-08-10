@@ -10,6 +10,8 @@ import os
 
 
 
+
+
 class myConv(nn.Module):
     def __init__(self, in_size, out_size,filter_size=3,stride=1,pad=None,do_batch=1,dov=0):
         super().__init__()
@@ -24,6 +26,9 @@ class myConv(nn.Module):
         
         if self.dov>0:
             self.do=nn.Dropout(dov)
+            
+    def swish(self,x):
+        return x * F.sigmoid(x)
     
     def forward(self, inputs):
      
@@ -31,7 +36,9 @@ class myConv(nn.Module):
         if self.do_batch:
             outputs = self.bn(outputs)  
         
-        outputs=F.relu(outputs)
+        # outputs=F.relu(outputs)
+        outputs=self.swish(outputs)
+        
         
         if self.dov>0:
             outputs = self.do(outputs)
@@ -48,7 +55,7 @@ class Net_addition_grow(nn.Module):
         return self.ts
     
     
-    def __init__(self, levels=7,lvl1_size=4,input_size=12,output_size=9,convs_in_layer=3,init_conv=4,filter_size=13,):
+    def __init__(self, levels=7,lvl1_size=4,input_size=12,output_size=9,convs_in_layer=3,init_conv=4,filter_size=13):
         super().__init__()
         self.levels=levels
         self.lvl1_size=lvl1_size
