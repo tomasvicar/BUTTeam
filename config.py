@@ -46,7 +46,7 @@ class Config:
     
     SWA=True
     SWA_NUM_EPOCHS=5
-    SWA_IT_FREQ=50
+    SWA_IT_FREQ=200
     
 
     SEX_AND_AGE=False
@@ -78,8 +78,9 @@ class Config:
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling),
         transforms.ZScore(mean=0,std=std),
-        transforms.RandomAmplifier(p=0.8,max_multiplier=0.1),
-        transforms.RandomStretch(p=0.8, max_stretch=0.1),
+        transforms.RandomShift(p=0.8),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
+        transforms.RandomStretch(p=0.8, max_stretch=0.2),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([
