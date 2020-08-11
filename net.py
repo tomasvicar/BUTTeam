@@ -36,8 +36,8 @@ class myConv(nn.Module):
         if self.do_batch:
             outputs = self.bn(outputs)  
         
-        # outputs=F.relu(outputs)
-        outputs=self.swish(outputs)
+        outputs=F.relu(outputs)
+        # outputs=self.swish(outputs)
         
         
         if self.dov>0:

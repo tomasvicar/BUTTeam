@@ -44,7 +44,7 @@ class Config:
     
     weight_decay=1e-5
     
-    SWA=False
+    SWA=True
     SWA_NUM_EPOCHS=5
     SWA_IT_FREQ=50
     
