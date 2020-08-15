@@ -36,11 +36,27 @@ from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
 
 
 def train_12ECG_classifier(input_directory, output_directory,measure_gpu=False):
+    
+    train_one_model(input_directory, output_directory,999,Config.MODELS_SEEDS[0],measure_gpu,pretrainig=False)
+    
     for model_num,model_seed in enumerate(Config.MODELS_SEEDS):
         train_one_model(input_directory, output_directory,model_num,model_seed,measure_gpu)
     
     
-def train_one_model(input_directory, output_directory,model_num,model_seed,measure_gpu):   
+def train_one_model(input_directory, output_directory,model_num,model_seed,measure_gpu,pretrainig=False):   
+    
+    if pretrainig:
+        LR_LIST=Config.LR_LIST_INIT
+        LR_CHANGES_LIST=Config.LR_CHANGES_LIST_INIT
+        LOSS_FUNTIONS=Config.LOSS_FUNTIONS_INIT
+        MAX_EPOCH=Config.MAX_EPOCH_INIT
+    else:
+        LR_LIST=Config.LR_LIST
+        LR_CHANGES_LIST=Config.LR_CHANGES_LIST
+        LOSS_FUNTIONS=Config.LOSS_FUNTIONS
+        MAX_EPOCH=Config.MAX_EPOCH
+    
+    
     
     if measure_gpu:
         import nvidia_smi
@@ -81,8 +97,12 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     permuted_idx = np.random.permutation(num_files)
     train_ind = permuted_idx[:split_ratio_ind]
     valid_ind = permuted_idx[split_ratio_ind:]
-    partition = {"train": [file_list[file_idx] for file_idx in train_ind],
-        "valid": [file_list[file_idx] for file_idx in valid_ind]}
+    if pretrainig:
+        partition = {"train": file_list,
+            "valid": [file_list[file_idx] for file_idx in valid_ind]}
+    else:
+        partition = {"train": [file_list[file_idx] for file_idx in train_ind],
+            "valid": [file_list[file_idx] for file_idx in valid_ind]}
     np.random.set_state(state)
 
 
@@ -97,27 +117,29 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     validation_generator = dataa.DataLoader(validation_set,batch_size=Config.BATCH_VALID,num_workers=Config.VALID_NUM_WORKERS,
                                            shuffle=False,drop_last=False,collate_fn=PaddedCollate() )
     
-    
-    model = net.Net_addition_grow(levels=Config.LEVELS,
-                                  lvl1_size=Config.LVL1_SIZE,
-                                  input_size=Config.INPUT_SIZE,
-                                  output_size=Config.OUTPUT_SIZE,
-                                  convs_in_layer=Config.CONVS_IN_LAYERS,
-                                  init_conv=Config.INIT_CONV,
-                                  filter_size=Config.FILTER_SIZE)
+    if pretrainig:
+        model = net.Net_addition_grow(levels=Config.LEVELS,
+                                      lvl1_size=Config.LVL1_SIZE,
+                                      input_size=Config.INPUT_SIZE,
+                                      output_size=Config.OUTPUT_SIZE,
+                                      convs_in_layer=Config.CONVS_IN_LAYERS,
+                                      init_conv=Config.INIT_CONV,
+                                      filter_size=Config.FILTER_SIZE)
+    else:
+        model = torch.load(output_directory +'/model' + str(999)  + '.pt')
     
     model.save_train_names(partition)
     model=model.to(device)
 
     ## create optimizer and learning rate scheduler to change learnng rate after 
     optimizer = optim.AdamW(model.parameters(),lr =Config.LR_LIST[0] ,betas= (0.9, 0.999),eps=1e-5,weight_decay=Config.weight_decay)
-    if Config.SWA:
+    if Config.SWA and not pretrainig:
         optimizer_swa = torchcontrib.optim.SWA(optimizer)
-    scheduler=AdjustLearningRateAndLoss(optimizer,Config.LR_LIST,Config.LR_CHANGES_LIST,Config.LOSS_FUNTIONS)
+    scheduler=AdjustLearningRateAndLoss(optimizer,LR_LIST,LR_CHANGES_LIST,LOSS_FUNTIONS)
     
     log=Log(['loss','challange_metric'])
     
-    for epoch in range(Config.MAX_EPOCH):
+    for epoch in range(MAX_EPOCH):
         
         print(get_lr(optimizer))
         print(scheduler.actual_loss)
@@ -167,8 +189,8 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
             ## save results
             log.append_train([loss,challange_metric])
             
-            if Config.SWA:
-                if epoch>=(Config.MAX_EPOCH-Config.SWA_NUM_EPOCHS) and it%Config.SWA_IT_FREQ==0:
+            if Config.SWA and not pretrainig:
+                if epoch>=(MAX_EPOCH-Config.SWA_NUM_EPOCHS) and it%Config.SWA_IT_FREQ==0:
                     optimizer_swa.update_swa()
             
                        
@@ -205,11 +227,11 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
             res_all.append(res)
 
               
-        if Config.SWA:
+        if Config.SWA and not pretrainig:
             if epoch==(Config.MAX_EPOCH-1):
                 optimizer_swa.swap_swa_sgd()
             
-        if epoch>=(Config.MAX_EPOCH-13):
+        if epoch>=(Config.MAX_EPOCH-13) and not pretrainig:
             ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0)) 
         else:
             ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0),fast=True) 
@@ -235,7 +257,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
         scheduler.step()
         
 
-    if Config.SWA:
+    if Config.SWA and not pretrainig:
         best_model_name=log.model_names[-1]
     else:
         best_model_name=log.model_names[np.argmax(log.opt_challange_metric_test)]

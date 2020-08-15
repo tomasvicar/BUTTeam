@@ -26,13 +26,22 @@ class Config:
     
     # MODELS_SEEDS=[42]
 
-    LR_LIST=np.array([0.01,0.001,0.0001,0.01,0.001,0.0001])/10
-    LR_CHANGES_LIST=[30,20,10,15,10,10]
-    LOSS_FUNTIONS=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
-    
 
+
+    LR_LIST_INIT=np.array([0.01,0.001])/10
+    LR_CHANGES_LIST_INIT=[30,20,10]
+    LOSS_FUNTIONS_INIT=[wce,wce,wce]
+    
+    MAX_EPOCH_INIT=np.sum(LR_CHANGES_LIST_INIT)
+    
+    
+    
+    LR_LIST=np.array([0.01,0.001,0.0001])/10
+    LR_CHANGES_LIST=[15,10,10]
+    LOSS_FUNTIONS=[challange_metric_loss,challange_metric_loss,challange_metric_loss]
     
     MAX_EPOCH=np.sum(LR_CHANGES_LIST)
+    
 
     
     
