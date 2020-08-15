@@ -37,7 +37,7 @@ from evaluate_12ECG_score_fixed_nan import evaluate_12ECG_score
 
 def train_12ECG_classifier(input_directory, output_directory,measure_gpu=False):
     
-    train_one_model(input_directory, output_directory,999,Config.MODELS_SEEDS[0],measure_gpu,pretrainig=False)
+    train_one_model(input_directory, output_directory,999,Config.MODELS_SEEDS[0],measure_gpu,pretrainig=True)
     
     for model_num,model_seed in enumerate(Config.MODELS_SEEDS):
         train_one_model(input_directory, output_directory,model_num,model_seed,measure_gpu)
