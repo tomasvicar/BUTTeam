@@ -22,9 +22,9 @@ class Config:
     
     # MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
     
-    # MODELS_SEEDS=[42+5455115,666+848489,69+448414]
+    MODELS_SEEDS=[42+5455115,666+848489,69+448414]
     
-    MODELS_SEEDS=[42]
+    # MODELS_SEEDS=[42]
 
     LR_LIST=np.array([0.01,0.001,0.0001,0.01,0.001,0.0001])/10
     LR_CHANGES_LIST=[30,20,10,15,10,10]
@@ -78,9 +78,8 @@ class Config:
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling),
         transforms.ZScore(mean=0,std=std),
-        transforms.RandomShift(p=0.8),
-        transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
-        transforms.RandomStretch(p=0.8, max_stretch=0.1),
+        transforms.RandomAmplifier(p=0.8,max_multiplier=0.1),
+        transforms.RandomStretch(p=0.8, max_stretch=0.05),
         ])
     
     TRANSFORM_DATA_VALID=transforms.Compose([
