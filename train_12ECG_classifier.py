@@ -231,7 +231,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
             if epoch==(Config.MAX_EPOCH-1):
                 optimizer_swa.swap_swa_sgd()
             
-        if epoch>=(Config.MAX_EPOCH-13) and not pretrainig:
+        if epoch>=(MAX_EPOCH-7) and not pretrainig:
             ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0)) 
         else:
             ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0),fast=True) 
