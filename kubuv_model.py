@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import os
 
 
 def conv1x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
@@ -293,11 +294,62 @@ class ResNet(nn.Module):
                 nn.init.constant_(module.bias, 0)
 
     def forward(self, x, sample_lengths):
+        
+        ## pad with more zeros  -  add as many zeros as convolution of all layers can proppagete numbers
+        n=1 #for 3 filter size
+        padded_length=n
+        for p,convs in enumerate(self.layer_depths):
+            for c in range(convs):
+                padded_length=padded_length+2**p*n
+        padded_length=padded_length+2**p*n+256 # 256 for sure
+
+        
+        shape=list(x.size())
+        xx=torch.zeros((shape[0],shape[1],int(padded_length)),dtype=x.dtype)
+        cuda_check = x.is_cuda
+        if cuda_check:
+            cuda_device = x.get_device()
+            device = torch.device('cuda:' + str(cuda_device) )
+            xx=xx.to(device)
+        
+        x=torch.cat((x,xx),2)### add zeros to signal
+        
+        x.requires_grad=True
+        
+        
+        
         x = self.gate(x)
         x = self.features(x, sample_lengths)
         x = self.global_max_pool(x, sample_lengths)
         x = self.classifier(x)
         return x
+    
+    
+    
+    def save_log(self,log):
+        self.log=log
+        
+    def save_config(self,config):  
+        self.config=config
+        
+    def save_lens(self,lens):
+        self.lens=lens
+        
+    def save_train_names(self,train_names):
+        
+        tmp=[]
+        for name in train_names['train']:
+            path,filename = os.path.split(name)
+            tmp.append(filename)
+        train_names['train']=tmp
+        
+        tmp=[]
+        for name in train_names['valid']:
+            path,filename = os.path.split(name)
+            tmp.append(filename)
+        train_names['valid']=tmp
+        
+        self.train_names=train_names
 
 
 def main():

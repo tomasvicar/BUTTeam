@@ -22,6 +22,7 @@ from utils.compute_challenge_metric_custom import compute_challenge_metric_custo
 from utils.optimize_ts import optimize_ts,aply_ts
 from dataset import Dataset
 import net
+import kubuv_model
 from utils.utils import AdjustLearningRateAndLoss
 from utils.get_stats import get_stats
 
@@ -66,6 +67,8 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     device = Config.DEVICE
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
+    
+    file_list=file_list[:2000]
 
     num_files = len(file_list)
     print(num_files)
@@ -118,13 +121,23 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
                                            shuffle=False,drop_last=False,collate_fn=PaddedCollate() )
     
     if pretrainig:
-        model = net.Net_addition_grow(levels=Config.LEVELS,
-                                      lvl1_size=Config.LVL1_SIZE,
-                                      input_size=Config.INPUT_SIZE,
-                                      output_size=Config.OUTPUT_SIZE,
-                                      convs_in_layer=Config.CONVS_IN_LAYERS,
-                                      init_conv=Config.INIT_CONV,
-                                      filter_size=Config.FILTER_SIZE)
+        # model = net.Net_addition_grow(levels=Config.LEVELS,
+        #                               lvl1_size=Config.LVL1_SIZE,
+        #                               input_size=Config.INPUT_SIZE,
+        #                               output_size=Config.OUTPUT_SIZE,
+        #                               convs_in_layer=Config.CONVS_IN_LAYERS,
+        #                               init_conv=Config.INIT_CONV,
+        #                               filter_size=Config.FILTER_SIZE)
+
+
+        model = kubuv_model.ResNet(Config.OUTPUT_SIZE, Config.INPUT_SIZE,
+                                   block_type=kubuv_model.SqueezedResidualBlock,
+                                   layer_type=kubuv_model.ResidualLayer,
+                                   activation_type="leaky_relu",
+                                   layer_planes=[32, 64, 96, 128, 160, 192],
+                                   layer_depths=[2, 2, 2, 2, 2, 2],
+                                   layer_cardinality=[8, 16, 16, 32, 32, 32])
+        
     else:
         model = torch.load(output_directory +'/model' + str(999)  + '.pt')
     
@@ -243,7 +256,10 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
         
         lr=get_lr(optimizer)
         
+        
         info='model' + str(model_num) + '_'  + str(epoch) + '_' + str(lr) + '_train_'  + str(log.train_log['challange_metric'][-1]) + '_valid_' + str(log.test_log['challange_metric'][-1]) + '_validopt_' + str(log.opt_challange_metric_test[-1])
+        if measure_gpu:
+            info=info + '_gpu_' + str(np.max(measured))
         print(info)
         
         model_name=output_directory+ os.sep + Config.MODEL_NOTE + info  
