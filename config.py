@@ -30,7 +30,7 @@ class Config:
 
     LR_LIST_INIT=np.array([0.01,0.001,0.0001,0.01,0.001,0.0001])/10
     LR_CHANGES_LIST_INIT=[30,20,10,15,10,10]
-    LOSS_FUNTIONS_INIT=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_los]
+    LOSS_FUNTIONS_INIT=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_loss]
     
     MAX_EPOCH_INIT=np.sum(LR_CHANGES_LIST_INIT)
     
