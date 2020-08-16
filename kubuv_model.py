@@ -351,6 +351,13 @@ class ResNet(nn.Module):
         
         self.train_names=train_names
 
+    def set_ts(self,ts):
+        self.ts=ts
+        
+    def get_ts(self):
+        return self.ts
+
+
 
 def main():
     batch_size, in_planes, sample_length = 8, 12, 15000

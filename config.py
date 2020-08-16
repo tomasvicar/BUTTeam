@@ -11,7 +11,7 @@ class Config:
     MODEL_NOTE='test0'
     
     
-    SPLIT_RATIO=[8,2]
+    SPLIT_RATIO=[9,1]
 
     TRAIN_NUM_WORKERS=6
     VALID_NUM_WORKERS=6
@@ -20,17 +20,17 @@ class Config:
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
     
-    MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
+    # MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
     
     # MODELS_SEEDS=[42+5455115,666+848489,69+448414]
     
-    # MODELS_SEEDS=[42]
+    MODELS_SEEDS=[42]
 
 
 
-    LR_LIST_INIT=np.array([0.01,0.001,0.0001])/10
-    LR_CHANGES_LIST_INIT=[30,20,10]
-    LOSS_FUNTIONS_INIT=[wce,wce,wce]
+    LR_LIST_INIT=np.array([0.01,0.001,0.0001,0.01,0.001,0.0001])/10
+    LR_CHANGES_LIST_INIT=[30,20,10,15,10,10]
+    LOSS_FUNTIONS_INIT=[wce,wce,wce,challange_metric_loss,challange_metric_loss,challange_metric_los]
     
     MAX_EPOCH_INIT=np.sum(LR_CHANGES_LIST_INIT)
     

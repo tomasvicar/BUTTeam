@@ -67,8 +67,6 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     device = Config.DEVICE
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
-    
-    file_list=file_list[:2000]
 
     num_files = len(file_list)
     print(num_files)
@@ -101,8 +99,11 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     train_ind = permuted_idx[:split_ratio_ind]
     valid_ind = permuted_idx[split_ratio_ind:]
     if pretrainig:
-        partition = {"train": file_list,
+        partition = {"train": [file_list[file_idx] for file_idx in train_ind],
             "valid": [file_list[file_idx] for file_idx in valid_ind]}
+
+    #     partition = {"train": file_list,
+    #         "valid": [file_list[file_idx] for file_idx in valid_ind]}
     else:
         partition = {"train": [file_list[file_idx] for file_idx in train_ind],
             "valid": [file_list[file_idx] for file_idx in valid_ind]}
@@ -134,7 +135,7 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
                                    block_type=kubuv_model.SqueezedResidualBlock,
                                    layer_type=kubuv_model.ResidualLayer,
                                    activation_type="leaky_relu",
-                                   layer_planes=[32, 64, 96, 128, 160, 192],
+                                   layer_planes=np.array([32, 64, 96, 128, 160, 192])*4,
                                    layer_depths=[2, 2, 2, 2, 2, 2],
                                    layer_cardinality=[8, 16, 16, 32, 32, 32])
         
