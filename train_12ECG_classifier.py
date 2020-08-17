@@ -99,11 +99,13 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     train_ind = permuted_idx[:split_ratio_ind]
     valid_ind = permuted_idx[split_ratio_ind:]
     if pretrainig:
-        partition = {"train": [file_list[file_idx] for file_idx in train_ind],
-            "valid": [file_list[file_idx] for file_idx in valid_ind]}
+        if Config.pretrain_whole:
+            partition = {"train": file_list,
+                "valid": [file_list[file_idx] for file_idx in valid_ind]}
+        else:
+            partition = {"train": [file_list[file_idx] for file_idx in train_ind],
+                "valid": [file_list[file_idx] for file_idx in valid_ind]}
 
-    #     partition = {"train": file_list,
-    #         "valid": [file_list[file_idx] for file_idx in valid_ind]}
     else:
         partition = {"train": [file_list[file_idx] for file_idx in train_ind],
             "valid": [file_list[file_idx] for file_idx in valid_ind]}
@@ -122,22 +124,21 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
                                            shuffle=False,drop_last=False,collate_fn=PaddedCollate() )
     
     if pretrainig:
-        # model = net.Net_addition_grow(levels=Config.LEVELS,
-        #                               lvl1_size=Config.LVL1_SIZE,
-        #                               input_size=Config.INPUT_SIZE,
-        #                               output_size=Config.OUTPUT_SIZE,
-        #                               convs_in_layer=Config.CONVS_IN_LAYERS,
-        #                               init_conv=Config.INIT_CONV,
-        #                               filter_size=Config.FILTER_SIZE)
+        model = net.Net_addition_grow(levels=Config.LEVELS,
+                                      lvl1_size=Config.LVL1_SIZE,
+                                      input_size=Config.INPUT_SIZE,
+                                      output_size=Config.OUTPUT_SIZE,
+                                      convs_in_layer=Config.CONVS_IN_LAYERS,
+                                      init_conv=Config.INIT_CONV,
+                                      filter_size=Config.FILTER_SIZE)
 
-
-        model = kubuv_model.ResNet(Config.OUTPUT_SIZE, Config.INPUT_SIZE,
-                                   block_type=kubuv_model.SqueezedResidualBlock,
-                                   layer_type=kubuv_model.ResidualLayer,
-                                   activation_type="leaky_relu",
-                                   layer_planes=np.array([32, 64, 96, 128, 160, 192])*4,
-                                   layer_depths=[2, 2, 2, 2, 2, 2],
-                                   layer_cardinality=[8, 16, 16, 32, 32, 32])
+        # model = kubuv_model.ResNet(Config.OUTPUT_SIZE, Config.INPUT_SIZE,
+        #                            block_type=kubuv_model.SqueezedResidualBlock,
+        #                            layer_type=kubuv_model.ResidualLayer,
+        #                            activation_type="leaky_relu",
+        #                            layer_planes=np.array([32, 64, 96, 128, 160, 192])*3,
+        #                            layer_depths=[2, 2, 2, 2, 2, 2],
+        #                            layer_cardinality=[8, 16, 16, 32, 32, 32])
         
     else:
         model = torch.load(output_directory +'/model' + str(999)  + '.pt')
