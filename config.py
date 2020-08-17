@@ -89,6 +89,7 @@ class Config:
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling),
+        transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=std),
         transforms.RandomShift(p=0.8),
         transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
@@ -97,6 +98,7 @@ class Config:
     
     TRANSFORM_DATA_VALID=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling),
+        transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=std),
         ])
     
