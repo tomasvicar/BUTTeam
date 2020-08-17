@@ -344,7 +344,7 @@ if __name__ == '__main__':
             current_label, current_score,classes = run_12ECG_classifier(data,header_data, model,traning_to_nan=True,file_name=f)
             # Save results.
             save_challenge_predictions(output_directory,f,current_score,current_label,classes)
-    
+
     
         print('Done.')
     
