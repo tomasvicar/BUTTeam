@@ -145,6 +145,81 @@ class DataReader:
             snomed_codes = list(set(snomed_codes))
 
         return sampling_frequency, resolution, age, sex, snomed_codes
+    
+    
+    
+    
+    @staticmethod
+    def read_header_keep_snomed(file_name, snomed_table,from_file=True,remap=False):
+        """Function saves information about the patient from header file in this order:
+        sampling frequency, length of the signal, voltage resolution, age, sex, list of diagnostic labels both in
+        SNOMED and abbreviations (sepate lists)"""
+
+        sampling_frequency, resolution, age, sex, snomed_codes = [], [], [], [], []
+
+        def string_to_float(input_string):
+            """Converts string to floating point number"""
+            try:
+                value = float(input_string)
+            except ValueError:
+                value = None
+
+            if math.isnan(value):
+                return None
+            else:
+                return value
+
+        if from_file:
+            lines=[]
+            with open(file_name, "r") as file:
+                for line_idx, line in enumerate(file):
+                    lines.append(line)
+        else:
+            lines=file_name
+
+        # Read line 15 in header file and parse string with labels
+
+        snomed_codes = []
+        resolution=[]
+        age=None
+        sex=None
+        for line_idx, line in enumerate(lines):
+            if line_idx == 0:
+                sampling_frequency = float(line.split(" ")[2])
+                continue
+            if 1<=line_idx<=12:
+                resolution.append(string_to_float(line.split(" ")[2].replace("/mV", "").replace("/mv", "")))
+                continue
+            if line.startswith('#Age'):
+                age = string_to_float(line.replace("#Age:","").replace("#Age","").rstrip("\n").strip())
+                continue
+            if line.startswith('#Sex'):
+                sex = line.replace("#Sex:","").replace("#Sex","").rstrip("\n").strip().lower()
+                if sex not in DataReader.sex_mapping:
+                    sex = None
+                else:
+                    sex = DataReader.sex_mapping[sex]
+                continue
+            if line.startswith('#Dx'):
+                if 1:
+                    snomed_codes = line.replace("#Dx:","").replace("#Dx","").rstrip("\n").strip().split(",")
+                    if remap:
+                        snomed_codes = [DataReader.snomed_mapping_remap.get(item, item) for item in snomed_codes]
+                    else:
+                        snomed_codes = [DataReader.snomed_mapping.get(item, item) for item in snomed_codes]
+                continue
+
+        if remap:
+            for code in DataReader.snomed_conditional_mapping:
+                if code in snomed_codes:
+                    snomed_codes.append(DataReader.snomed_conditional_mapping[code])
+    
+            # Remove duplicates
+            snomed_codes = list(set(snomed_codes))
+
+        return sampling_frequency, resolution, age, sex, snomed_codes
+    
+    
 
     @staticmethod
     def get_label_maps(path="tables/"):
