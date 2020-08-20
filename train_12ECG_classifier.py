@@ -68,8 +68,6 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
     
-    file_list=file_list[:1000]
-
     num_files = len(file_list)
     print(num_files)
 
