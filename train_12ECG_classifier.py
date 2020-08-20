@@ -25,7 +25,7 @@ import net
 import kubuv_model
 from utils.utils import AdjustLearningRateAndLoss
 from utils.get_stats import get_stats
-
+from utils.get_dice import get_dice
 from run_12ECG_classifier import run_12ECG_classifier,load_12ECG_model
 from driver import load_challenge_data,save_challenge_predictions
 
@@ -67,6 +67,8 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
     device = Config.DEVICE
     
     file_list = glob.glob(input_directory + "/**/*.mat", recursive=True)
+    
+    file_list=file_list[:1000]
 
     num_files = len(file_list)
     print(num_files)
@@ -252,6 +254,9 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
             ts,opt_challenge_metric=optimize_ts(np.concatenate(res_all,axis=0),np.concatenate(lbls_all,axis=0),fast=True) 
             
         model.set_ts(ts)
+        
+        dice= get_dice(np.concatenate(lbls_all,axis=0),aply_ts(np.concatenate(res_all,axis=0),model.get_ts()))
+        
         log.save_opt_challange_metric_test(opt_challenge_metric)
         
         log.save_and_reset()
@@ -259,9 +264,9 @@ def train_one_model(input_directory, output_directory,model_num,model_seed,measu
         lr=get_lr(optimizer)
         
         
-        info='model' + str(model_num) + '_'  + str(epoch) + '_' + str(lr) + '_train_'  + str(log.train_log['challange_metric'][-1]) + '_valid_' + str(log.test_log['challange_metric'][-1]) + '_validopt_' + str(log.opt_challange_metric_test[-1])
+        info='model' + str(model_num) + '_'  + str(epoch) + '_' + str(lr) + '_train_'  + str( np.round(log.train_log['challange_metric'][-1],decimals=4)) + '_valid_' + str( np.round(log.test_log['challange_metric'][-1],decimals=4)) + '_validopt_' + str( np.round(log.opt_challange_metric_test[-1],decimals=4)) + '_dice_' + str( np.round(dice,decimals=4))
         if measure_gpu:
-            info=info + '_gpu_' + str(np.max(measured))
+            info=info + '_gpu_' + str(np.round(np.max(measured),decimals=4))
         print(info)
         
         model_name=output_directory+ os.sep + Config.MODEL_NOTE + info  

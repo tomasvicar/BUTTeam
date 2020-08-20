@@ -20,14 +20,14 @@ class Config:
     BATCH_VALID=BATCH_TRAIN ## sould be same
     
     
-    pretrain_whole=True
+    pretrain_whole=False
     
     
-    MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
+    # MODELS_SEEDS=[42+5455115,666+848489,69+448414,13+4848494,142857+849484]
     
     # MODELS_SEEDS=[42+5455115,666+848489,69+448414]
     
-    # MODELS_SEEDS=[42]
+    MODELS_SEEDS=[42]
 
 
 
@@ -69,9 +69,9 @@ class Config:
         INPUT_SIZE=12
 
     LEVELS=6
-    LVL1_SIZE=6*5
+    LVL1_SIZE=6*8
     OUTPUT_SIZE=24
-    CONVS_IN_LAYERS=4
+    CONVS_IN_LAYERS=3
     INIT_CONV=LVL1_SIZE
     FILTER_SIZE=7
     
@@ -89,7 +89,6 @@ class Config:
     
     TRANSFORM_DATA_TRAIN=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling),
-        transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=std),
         transforms.RandomShift(p=0.8),
         transforms.RandomAmplifier(p=0.8,max_multiplier=0.2),
@@ -98,7 +97,6 @@ class Config:
     
     TRANSFORM_DATA_VALID=transforms.Compose([
         transforms.Resample(output_sampling=output_sampling),
-        transforms.BaseLineFilter(window_size=int(1000/(500/output_sampling))),
         transforms.ZScore(mean=0,std=std),
         ])
     
