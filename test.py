@@ -10,7 +10,7 @@ data_path='../Training_WFDB'
 # data_path="../../test_split_tmp"
 
 
-res_path='../res'
+res_path='../net_prediction_for_gui'
 
 try:
     shutil.rmtree(res_path)
