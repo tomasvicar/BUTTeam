@@ -103,12 +103,16 @@ def get_splits_means_stds_lens_counts():
     
     ## create random crossvalidation train/test splits
     np.random.seed(666)
+    perm=np.random.permutation(len(names))
+    split_ratio_num=int(np.floor(split_ratio[1]/(split_ratio[0]+split_ratio[1])*len(names)))
     splits=[]
     for k in range(num_of_splits):
-        split_ratio_ind=int(np.floor(split_ratio[0]/(split_ratio[0]+split_ratio[1])*len(names)))
-        perm=np.random.permutation(len(names))
-        train_ind=perm[:split_ratio_ind]
-        valid_ind=perm[split_ratio_ind:]
+        
+        
+        split_ratio_ind1=split_ratio_num*(k)
+        split_ratio_ind2=split_ratio_num*(k+1)
+        valid_ind=perm[split_ratio_ind1:split_ratio_ind2]
+        train_ind=np.concatenate((perm[:split_ratio_ind1], perm[split_ratio_ind2:]))
         split= {'train': [names[i] for i in train_ind],'valid': [names[i] for i in valid_ind]}
         splits.append(split)
     

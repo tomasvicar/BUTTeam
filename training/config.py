@@ -5,8 +5,8 @@ class Config:
     
     pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
     
-    # DATA_PATH = "../../Training_WFDB/"
-    DATA_PATH ="../../train_split_tmp"
+    DATA_PATH = "../../Training_WFDB/"
+    # DATA_PATH ="../../train_split_tmp"
     
     train_batch_size = 32
     train_num_workers=4
@@ -21,7 +21,7 @@ class Config:
     
     info_save_dir='data_split'
     split_ratio=[8,2]
-    num_of_splits=3
+    num_of_splits=5
     
     model_save_dir='../../tmp'
     
